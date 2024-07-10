@@ -554,15 +554,15 @@ namespace LineControl
 
             #region 用于测试
 
-            //DateTime start = new DateTime(2024, 1, 1);
-            //double[] ys = Generate.RandomWalk(200);
+            DateTime start = new DateTime(2024, 1, 1);
+            double[] ys = Generate.RandomWalk(5 * 10000);
 
-            ////formsPlot1.Plot.Title("123");
-            //var sig = formsPlot.Plot.Add.Signal(ys);
-            //sig.Data.XOffset = start.ToOADate();
-            //sig.Data.Period = 1.0; // one day between each point
+            //formsPlot1.Plot.Title("123");
+            var sig = formsPlot.Plot.Add.Signal(ys);
+            sig.Data.XOffset = start.ToOADate();
+            sig.Data.Period = 1.0; // one day between each point
 
-            //formsPlot.Plot.Axes.DateTimeTicksBottom();
+            formsPlot.Plot.Axes.DateTimeTicksBottom();
 
             #endregion
 
@@ -682,5 +682,9 @@ namespace LineControl
             //xyChart.Titles.Clear();
         }
 
+        private void panelChart_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
