@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using LineControl.Properties;
 using ScottPlot;
 using ScottPlot.WinForms;
+using System.Collections.Generic;
 
 namespace LineControl
 {
@@ -554,16 +555,29 @@ namespace LineControl
 
             #region 用于测试
 
-            DateTime start = new DateTime(2024, 1, 1);
-            double[] ys = Generate.RandomWalk(5 * 10000);
+            isRuning = false;
 
-            //formsPlot1.Plot.Title("123");
-            var sig = formsPlot.Plot.Add.Signal(ys);
-            sig.Data.XOffset = start.ToOADate();
-            sig.Data.Period = 1.0; // one day between each point
+            // 测试1
+            //var width = formsPlot.Width;
 
-            formsPlot.Plot.Axes.DateTimeTicksBottom();
+            //DateTime start = new DateTime(2024, 1, 1);
+            //double[] ys = Generate.RandomWalk(width);
 
+            //var sig = formsPlot.Plot.Add.Signal(ys);
+            //sig.Data.XOffset = start.ToOADate();
+            //sig.Data.Period = 1.0; // one day between each point
+
+            //formsPlot.Plot.Axes.DateTimeTicksBottom();
+
+            // 测试2
+            //var count = 10;
+            //plot.Axes.SetLimitsX(1, count);
+            //for (int i = 1; i <= count; i++)
+            //{
+            //    var line = plot.Add.Line(i, Generate.RandomInteger(100), i, Generate.RandomInteger(100));
+            //    line.LineColor = ScottPlot.Colors.White;
+            //}
+            
             #endregion
 
             SetTitle();
@@ -595,6 +609,7 @@ namespace LineControl
             plot.FigureBackground.Color = ScottPlot.Color.FromColor(saveData.chartBackColor);   // 设置背景色
             plot.DataBackground.Color = ScottPlot.Color.FromColor(saveData.chartForeColor);     // 设置前景色
 
+            // 根据配置的曲线设置轴最大值和最小值
             //chartArea.AxisX.Minimum = saveData.xAxisMin;        // 设置X轴最小值
             //chartArea.AxisX.Maximum = saveData.xAxisMax;        // 设置X轴最大值
             //chartArea.AxisY.Minimum = saveData.yAxisMin;        // 设置Y轴最小值
