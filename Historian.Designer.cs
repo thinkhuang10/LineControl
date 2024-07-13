@@ -62,7 +62,6 @@
             this.panelChart.Name = "panelChart";
             this.panelChart.Size = new System.Drawing.Size(800, 503);
             this.panelChart.TabIndex = 0;
-            this.panelChart.Paint += new System.Windows.Forms.PaintEventHandler(this.panelChart_Paint);
             // 
             // panelQuery
             // 

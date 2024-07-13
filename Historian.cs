@@ -1,4 +1,7 @@
 ﻿using CommonSnappableTypes;
+using LineControl.Properties;
+using ScottPlot;
+using ScottPlot.WinForms;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -6,15 +9,13 @@ using System.IO;
 using System.Resources;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using LineControl.Properties;
-using ScottPlot;
-using ScottPlot.WinForms;
-using System.Collections.Generic;
 
 namespace LineControl
 {
     public partial class Historian: UserControl,IDCCEControl
     {
+        #region 变量定义
+
         private readonly FormsPlot formsPlot = new FormsPlot() { Dock = DockStyle.Fill };
         private Plot plot;
 
@@ -25,6 +26,16 @@ namespace LineControl
         private bool isInitSeriesInRunningStatus = false;
 
         private Save saveData = new Save();
+
+        private string token = "n3rzVj62MZmpisZyy4VSlKaXc8IFMvHsWhQLzxsGXWZlRX5hzSVloAvCrLEacRDj1cS2x0uHUCGAhzR-lH99NQ==";
+
+        private string orgID = "d726b22e0ead9045";
+
+        // 用于office测试
+        //private static readonly string token = "NaoGum6B86URgxT9T5Pwyzn6w_O8wz1bPBEGF_pJQJ0oNCb0lEHX0uXRkNNQl8PvmL74T3RIaowshUpPzt-QCw==";
+        //private string orgID = "9a08e84e2e95f668";
+
+        #endregion
 
         #region 与组态的接口
 
@@ -544,6 +555,8 @@ namespace LineControl
 
         #endregion
 
+        #region 初始化
+
         public Historian()
         {
             InitializeComponent();
@@ -598,6 +611,10 @@ namespace LineControl
             startDtp.Value = DateTime.Now - TimeSpan.FromHours(1);
             endDtp.Value = DateTime.Now;
         }
+
+        #endregion
+
+        #region 设置曲线
 
         private void SetTitle()
         {
@@ -660,7 +677,6 @@ namespace LineControl
             //xyChart.ChartAreas[ChartAreaName].AxisY.Interval = yInterval;
         }
 
-
         private void SetSeriesStyle()
         {
             //// 提前初始化曲线,定时器中不要周期执行
@@ -704,10 +720,9 @@ namespace LineControl
             //xyChart.Titles.Clear();
         }
 
-        private void panelChart_Paint(object sender, PaintEventArgs e)
-        {
+        #endregion
 
-        }
+        #region 查询
 
         private void btQuery_Click(object sender, EventArgs e)
         {
@@ -720,7 +735,53 @@ namespace LineControl
                 return;
             }
 
+            using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
+            {
+                // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
+                var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
+                var endTime = endDtp.Value.ToUniversalTime().ToString("s") + "Z";
+
+                // 获取表格的总行数
+                var count = 0;
+                var fluxCount = "import \"strings\"" + Environment.NewLine +
+                    "from(bucket: \"Alarm_4B2DC4D9-38ED-42B8-6E2E-4665F0B54672\")" + Environment.NewLine +
+                    $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"_measurement\"] == \"alarm\")" + Environment.NewLine +
+                    "|> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")" + Environment.NewLine +
+                    saveData.InfluxDBFiltersCondition + Environment.NewLine +
+                    "|> group(columns: [\"_measurement\"])" + Environment.NewLine +
+                    "|> toString()" + Environment.NewLine +
+                    "|> count()";
+
+                //var fluxCount = "import \"strings\"" + Environment.NewLine +
+                //    "from(bucket: \"TestBucket\")" + Environment.NewLine +
+                //    "|> range(start: 2022-01-01T08:00:00Z, stop: 2022-01-01T20:00:01Z)" + Environment.NewLine +
+                //    "|> filter(fn: (r) => strings.containsStr(v: r.room, substr: \"Kit\") == true)" + Environment.NewLine +
+                //    "|> toString()" + Environment.NewLine +
+                //    "|> group(columns: [\"_measurement\"])" + Environment.NewLine +
+                //    "|> count()";
+
+                var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxCount, orgID);
+                fluxCountTable.ForEach(fluxTable =>
+                {
+                    var fluxRecords = fluxTable.Records;
+                    fluxRecords.ForEach(fluxRecord =>
+                    {
+                        int.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out count);
+                    });
+                });
+
+                // 设置总的条数
+                // 设置全部报警状态栏
+                全部报警toolStripStatusLabel.Text = string.Format("全部报警：{0}", count);
+
+                pageCount = (int)Math.Ceiling((float)count / saveData.pageSize);
+                bindingNavigatorCountItem.Text = string.Concat("/ 共 ", pageCount.ToString(), " 页");
+            }
 
         }
+
+        #endregion
+
     }
 }
