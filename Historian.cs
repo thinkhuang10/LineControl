@@ -552,6 +552,7 @@ namespace LineControl
         private void UserControl_Load(object sender, EventArgs e)
         {
             InitPlot();
+            InitDateTime();
 
             #region 用于测试
 
@@ -590,6 +591,12 @@ namespace LineControl
             plot = formsPlot.Plot;
             panelChart.DoubleClick += chart_DoubleClick;
             panelChart.Controls.Add(formsPlot);
+        }
+
+        private void InitDateTime()
+        {
+            startDtp.Value = DateTime.Now - TimeSpan.FromHours(1);
+            endDtp.Value = DateTime.Now;
         }
 
         private void SetTitle()
@@ -699,6 +706,20 @@ namespace LineControl
 
         private void panelChart_Paint(object sender, PaintEventArgs e)
         {
+
+        }
+
+        private void btQuery_Click(object sender, EventArgs e)
+        {
+            if (!isRuning)
+                return;
+
+            if (startDtp.Value > endDtp.Value)
+            {
+                MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
 
         }
     }
