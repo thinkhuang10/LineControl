@@ -1,8 +1,10 @@
 ﻿using CommonSnappableTypes;
+using InfluxDB.Client;
 using LineControl.Properties;
 using ScottPlot;
 using ScottPlot.WinForms;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -30,6 +32,8 @@ namespace LineControl
         private string token = "n3rzVj62MZmpisZyy4VSlKaXc8IFMvHsWhQLzxsGXWZlRX5hzSVloAvCrLEacRDj1cS2x0uHUCGAhzR-lH99NQ==";
 
         private string orgID = "d726b22e0ead9045";
+
+        private string projectGuid = "4B2DC4D9-38ED-42B8-6E2E-4665F0B54672";
 
         // 用于office测试
         //private static readonly string token = "NaoGum6B86URgxT9T5Pwyzn6w_O8wz1bPBEGF_pJQJ0oNCb0lEHX0uXRkNNQl8PvmL74T3RIaowshUpPzt-QCw==";
@@ -569,7 +573,7 @@ namespace LineControl
 
             #region 用于测试
 
-            isRuning = false;
+            isRuning = true;
 
             // 测试1
             //var width = formsPlot.Width;
@@ -724,7 +728,7 @@ namespace LineControl
 
         #region 查询
 
-        private void btQuery_Click(object sender, EventArgs e)
+        private async void btQuery_Click(object sender, EventArgs e)
         {
             if (!isRuning)
                 return;
@@ -735,50 +739,39 @@ namespace LineControl
                 return;
             }
 
+            var dateTimes = new List<DateTime>();
+            var yValues = new List<Double>();
             using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
             {
                 // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
                 var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
                 var endTime = endDtp.Value.ToUniversalTime().ToString("s") + "Z";
 
-                // 获取表格的总行数
-                var count = 0;
-                var fluxCount = "import \"strings\"" + Environment.NewLine +
-                    "from(bucket: \"Alarm_4B2DC4D9-38ED-42B8-6E2E-4665F0B54672\")" + Environment.NewLine +
+                var flux = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"_measurement\"] == \"alarm\")" + Environment.NewLine +
-                    "|> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")" + Environment.NewLine +
-                    saveData.InfluxDBFiltersCondition + Environment.NewLine +
-                    "|> group(columns: [\"_measurement\"])" + Environment.NewLine +
-                    "|> toString()" + Environment.NewLine +
-                    "|> count()";
+                    "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")";
 
-                //var fluxCount = "import \"strings\"" + Environment.NewLine +
-                //    "from(bucket: \"TestBucket\")" + Environment.NewLine +
-                //    "|> range(start: 2022-01-01T08:00:00Z, stop: 2022-01-01T20:00:01Z)" + Environment.NewLine +
-                //    "|> filter(fn: (r) => strings.containsStr(v: r.room, substr: \"Kit\") == true)" + Environment.NewLine +
-                //    "|> toString()" + Environment.NewLine +
-                //    "|> group(columns: [\"_measurement\"])" + Environment.NewLine +
-                //    "|> count()";
+                var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(flux, orgID);
 
-                var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxCount, orgID);
                 fluxCountTable.ForEach(fluxTable =>
                 {
                     var fluxRecords = fluxTable.Records;
                     fluxRecords.ForEach(fluxRecord =>
                     {
-                        int.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out count);
+                        DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(),out var dateTime);
+                        double.TryParse(fluxRecord.GetValueByKey("_value").ToString(),out var yValue);
+
+                        dateTimes.Add(dateTime);
+                        yValues.Add(yValue);
                     });
                 });
-
-                // 设置总的条数
-                // 设置全部报警状态栏
-                全部报警toolStripStatusLabel.Text = string.Format("全部报警：{0}", count);
-
-                pageCount = (int)Math.Ceiling((float)count / saveData.pageSize);
-                bindingNavigatorCountItem.Text = string.Concat("/ 共 ", pageCount.ToString(), " 页");
             }
 
+            plot.Add.Scatter(dateTimes.ToArray(), yValues.ToArray());
+            plot.Axes.DateTimeTicksBottom();
+            plot.Axes.Right.MinimumSize = 50;
+            formsPlot.Refresh();
         }
 
         #endregion

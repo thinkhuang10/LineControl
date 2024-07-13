@@ -31,9 +31,9 @@
             this.FrameTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.panelChart = new System.Windows.Forms.Panel();
             this.panelQuery = new System.Windows.Forms.Panel();
-            this.startDtp = new System.Windows.Forms.DateTimePicker();
-            this.endDtp = new System.Windows.Forms.DateTimePicker();
             this.btQuery = new System.Windows.Forms.Button();
+            this.endDtp = new System.Windows.Forms.DateTimePicker();
+            this.startDtp = new System.Windows.Forms.DateTimePicker();
             this.FrameTableLayoutPanel.SuspendLayout();
             this.panelQuery.SuspendLayout();
             this.SuspendLayout();
@@ -75,22 +75,6 @@
             this.panelQuery.Size = new System.Drawing.Size(800, 37);
             this.panelQuery.TabIndex = 1;
             // 
-            // startDtp
-            // 
-            this.startDtp.Location = new System.Drawing.Point(15, 10);
-            this.startDtp.Margin = new System.Windows.Forms.Padding(2);
-            this.startDtp.Name = "startDtp";
-            this.startDtp.Size = new System.Drawing.Size(209, 21);
-            this.startDtp.TabIndex = 0;
-            // 
-            // endDtp
-            // 
-            this.endDtp.Location = new System.Drawing.Point(237, 10);
-            this.endDtp.Margin = new System.Windows.Forms.Padding(2);
-            this.endDtp.Name = "endDtp";
-            this.endDtp.Size = new System.Drawing.Size(209, 21);
-            this.endDtp.TabIndex = 1;
-            // 
             // btQuery
             // 
             this.btQuery.Location = new System.Drawing.Point(472, 9);
@@ -100,6 +84,26 @@
             this.btQuery.Text = "查询";
             this.btQuery.UseVisualStyleBackColor = true;
             this.btQuery.Click += new System.EventHandler(this.btQuery_Click);
+            // 
+            // endDtp
+            // 
+            this.endDtp.CustomFormat = "yyyy-MM-dd HH:mm:ss";
+            this.endDtp.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.endDtp.Location = new System.Drawing.Point(237, 10);
+            this.endDtp.Margin = new System.Windows.Forms.Padding(2);
+            this.endDtp.Name = "endDtp";
+            this.endDtp.Size = new System.Drawing.Size(209, 21);
+            this.endDtp.TabIndex = 1;
+            // 
+            // startDtp
+            // 
+            this.startDtp.CustomFormat = "yyyy-MM-dd HH:mm:ss";
+            this.startDtp.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.startDtp.Location = new System.Drawing.Point(15, 10);
+            this.startDtp.Margin = new System.Windows.Forms.Padding(2);
+            this.startDtp.Name = "startDtp";
+            this.startDtp.Size = new System.Drawing.Size(209, 21);
+            this.startDtp.TabIndex = 0;
             // 
             // Historian
             // 
