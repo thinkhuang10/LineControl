@@ -740,7 +740,7 @@ namespace LineControl
             }
 
             var dateTimes = new List<DateTime>();
-            var yValues = new List<Double>();
+            var yValues = new List<double>();
             using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
             {
                 // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
