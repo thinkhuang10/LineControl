@@ -588,19 +588,46 @@ namespace LineControl
             //formsPlot.Plot.Axes.DateTimeTicksBottom();
 
             // 测试2
-            //var count = 10;
-            //plot.Axes.SetLimitsX(1, count);
-            //for (int i = 1; i <= count; i++)
-            //{
-            //    var line = plot.Add.Line(i, Generate.RandomInteger(100), i, Generate.RandomInteger(100));
-            //    line.LineColor = ScottPlot.Colors.White;
-            //}
-            
+            var count = 3600;
+            //var initDateTime = DateTime.Now.ToOADate();
+            //var endDateTime = (DateTime.Now + TimeSpan.FromHours(1)).ToOADate();
+            //plot.Axes.SetLimitsX(initDateTime, endDateTime);
+            for (int i = 0; i < count; i++)
+            {
+                var time = DateTime.Now + TimeSpan.FromSeconds(count);
+                var x = ConvertDateTimeToLong(time);
+                var line = plot.Add.Line(i, Generate.RandomInteger(100), i, Generate.RandomInteger(100));
+                //var line = plot.Add.Line(time.ToOADate(), Generate.RandomInteger(100), time.ToOADate(), Generate.RandomInteger(100));
+                line.LineColor = ScottPlot.Colors.White;
+            }
+            plot.Axes.DateTimeTicksBottom();
+
             #endregion
 
             SetTitle();
             SetChartArea();
             SetGridAndAxisInterval();
+        }
+
+        // DateTime --> long
+        public static long ConvertDateTimeToLong(DateTime dt)
+        {
+            DateTime dtStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+            TimeSpan toNow = dt.Subtract(dtStart);
+            long timeStamp = toNow.Ticks;
+            timeStamp = long.Parse(timeStamp.ToString().Substring(0, timeStamp.ToString().Length - 4));
+            return timeStamp;
+        }
+
+
+        // long --> DateTime
+        public static DateTime ConvertLongToDateTime(long d)
+        {
+            DateTime dtStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+            long lTime = long.Parse(d + "0000");
+            TimeSpan toNow = new TimeSpan(lTime);
+            DateTime dtResult = dtStart.Add(toNow);
+            return dtResult;
         }
 
         private void InitPlot()
@@ -739,6 +766,123 @@ namespace LineControl
                 return;
             }
 
+            // 获取点的个数
+            var count = 0;
+            using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
+            {
+                // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
+                var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
+                var endTime = endDtp.Value.ToUniversalTime().ToString("s") + "Z";
+
+                // 获取表格的总行数
+                var fluxCount = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
+                    $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")" + Environment.NewLine +
+                    "|> count()";
+
+                //var fluxCount = "import \"strings\"" + Environment.NewLine +
+                //    "from(bucket: \"TestBucket\")" + Environment.NewLine +
+                //    "|> range(start: 2022-01-01T08:00:00Z, stop: 2022-01-01T20:00:01Z)" + Environment.NewLine +
+                //    "|> filter(fn: (r) => strings.containsStr(v: r.room, substr: \"Kit\") == true)" + Environment.NewLine +
+                //    "|> toString()" + Environment.NewLine +
+                //    "|> group(columns: [\"_measurement\"])" + Environment.NewLine +
+                //    "|> count()";
+
+                var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxCount, orgID);
+                fluxCountTable.ForEach(fluxTable =>
+                {
+                    var fluxRecords = fluxTable.Records;
+                    fluxRecords.ForEach(fluxRecord =>
+                    {
+                        int.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out count);
+                    });
+                });
+            }
+
+            // 获取控件的像素点数
+            var plotWidth = formsPlot.Width;
+            if (count > plotWidth)
+            {
+                var totalSeconds = (endDtp.Value - startDtp.Value).TotalSeconds;
+                var gapSecond = ((int)totalSeconds) / plotWidth;
+                RenderLineByOptimize(gapSecond);
+            }
+            else
+            {
+                RenderLineByNormal();
+            }
+        }
+
+        private async void RenderLineByOptimize(double gapSecond)
+        {
+            var dateTimes = new List<DateTime>();
+            var yMaxValues = new List<double>();
+            var yMinValues = new List<double>();
+
+            using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
+            {
+                // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
+                var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
+                var endTime = endDtp.Value.ToUniversalTime().ToString("s") + "Z";
+
+                var fluxMax = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
+                    $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")" + Environment.NewLine +
+                    $"|> aggregateWindow(every: {gapSecond}s, fn: max)";
+
+                var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxMax, orgID);
+
+                fluxCountTable.ForEach(fluxTable =>
+                {
+                    var fluxRecords = fluxTable.Records;
+                    fluxRecords.ForEach(fluxRecord =>
+                    {
+                        DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
+                        double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out var yValue);
+
+                        dateTimes.Add(dateTime);
+                        yMaxValues.Add(yValue);
+                    });
+                });
+
+                var fluxMin = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
+                    $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")" + Environment.NewLine +
+                    $"|> aggregateWindow(every: {gapSecond}s, fn: min)";
+
+                var fluxCountTableMin = await influxDBClient.GetQueryApi().QueryAsync(fluxMin, orgID);
+
+                fluxCountTableMin.ForEach(fluxTable =>
+                {
+                    var fluxRecords = fluxTable.Records;
+                    fluxRecords.ForEach(fluxRecord =>
+                    {
+                        DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
+                        double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out var yValue);
+
+                        yMinValues.Add(yValue);
+                    });
+                });
+            }
+
+            plot.Clear();
+            //var dateTimesArray = dateTimes.ToArray();
+            //var yValuesArray = yMaxValues.ToArray();
+            //for (int i = 0; i < dateTimes.Count; i++)
+            //{
+            //    //var line = plot.Add.Line(dateTimesArray[i].ToOADate(), yValuesArray[i], dateTimesArray[i].ToOADate(), yValuesArray[i]);
+            //    var line = plot.Add.Line(dateTimesArray[i].ToOADate(), yValuesArray[i]-1, dateTimesArray[i].ToOADate(), yValuesArray[i]);
+            //    line.LineColor = ScottPlot.Colors.White;
+            //}
+            ////plot.Axes.DateTimeTicksBottom();
+            //formsPlot.Refresh();
+        }
+
+        private async void RenderLineByNormal()
+        {
             var dateTimes = new List<DateTime>();
             var yValues = new List<double>();
             using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
@@ -759,8 +903,8 @@ namespace LineControl
                     var fluxRecords = fluxTable.Records;
                     fluxRecords.ForEach(fluxRecord =>
                     {
-                        DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(),out var dateTime);
-                        double.TryParse(fluxRecord.GetValueByKey("_value").ToString(),out var yValue);
+                        DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
+                        double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out var yValue);
 
                         dateTimes.Add(dateTime);
                         yValues.Add(yValue);
@@ -768,7 +912,11 @@ namespace LineControl
                 });
             }
 
-            plot.Add.Scatter(dateTimes.ToArray(), yValues.ToArray());
+            plot.Clear();
+            var line = plot.Add.ScatterLine(dateTimes.ToArray(), yValues.ToArray());
+            line.Color = ScottPlot.Colors.Green;
+            line.LinePattern = LinePattern.Solid;
+
             plot.Axes.DateTimeTicksBottom();
             plot.Axes.Right.MinimumSize = 50;
             formsPlot.Refresh();
