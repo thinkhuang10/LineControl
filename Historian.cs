@@ -588,17 +588,37 @@ namespace LineControl
             //formsPlot.Plot.Axes.DateTimeTicksBottom();
 
             // 测试2
-            var count = 3600;
-            //var initDateTime = DateTime.Now.ToOADate();
-            //var endDateTime = (DateTime.Now + TimeSpan.FromHours(1)).ToOADate();
-            //plot.Axes.SetLimitsX(initDateTime, endDateTime);
-            for (int i = 0; i < count; i++)
+            var count = 3;
+            var minValues = new float[count];
+            var maxValues = new float[count];
+            var val = 0.0f;
+
+            for (var i = 0; i < count; i++)
             {
-                var time = DateTime.Now + TimeSpan.FromSeconds(count);
-                var x = ConvertDateTimeToLong(time);
-                var line = plot.Add.Line(i, Generate.RandomInteger(100), i, Generate.RandomInteger(100));
-                //var line = plot.Add.Line(time.ToOADate(), Generate.RandomInteger(100), time.ToOADate(), Generate.RandomInteger(100));
+                minValues[i] = val;
+                maxValues[i] = val + 50;
+                val++;
+
+                if (val > 100)
+                {
+                    val = 0;
+                }
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                var time = DateTime.Now + TimeSpan.FromSeconds(i);
+                var line = plot.Add.Line(time.ToOADate(), minValues[i],
+                    time.ToOADate(), maxValues[i]);
                 line.LineColor = ScottPlot.Colors.White;
+
+                if (i != count - 1)
+                {
+                    var timeMinAndMax = time + TimeSpan.FromSeconds(1);
+                    var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i],
+                        timeMinAndMax.ToOADate(), minValues[i+1]);
+                    lineMinAndMax.LineColor = ScottPlot.Colors.White;
+                }
             }
             plot.Axes.DateTimeTicksBottom();
 
@@ -607,27 +627,6 @@ namespace LineControl
             SetTitle();
             SetChartArea();
             SetGridAndAxisInterval();
-        }
-
-        // DateTime --> long
-        public static long ConvertDateTimeToLong(DateTime dt)
-        {
-            DateTime dtStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
-            TimeSpan toNow = dt.Subtract(dtStart);
-            long timeStamp = toNow.Ticks;
-            timeStamp = long.Parse(timeStamp.ToString().Substring(0, timeStamp.ToString().Length - 4));
-            return timeStamp;
-        }
-
-
-        // long --> DateTime
-        public static DateTime ConvertLongToDateTime(long d)
-        {
-            DateTime dtStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
-            long lTime = long.Parse(d + "0000");
-            TimeSpan toNow = new TimeSpan(lTime);
-            DateTime dtResult = dtStart.Add(toNow);
-            return dtResult;
         }
 
         private void InitPlot()
