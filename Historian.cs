@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
 using System.Resources;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -18,6 +19,14 @@ namespace LineControl
     {
         #region 变量定义
 
+        private const string influxDBUrl = "http://localhost:8086";
+
+        private const string token = "n3rzVj62MZmpisZyy4VSlKaXc8IFMvHsWhQLzxsGXWZlRX5hzSVloAvCrLEacRDj1cS2x0uHUCGAhzR-lH99NQ==";
+
+        private const string orgID = "d726b22e0ead9045";
+
+        private const string projectGuid = "4B2DC4D9-38ED-42B8-6E2E-4665F0B54672";
+
         private readonly FormsPlot formsPlot = new FormsPlot() { Dock = DockStyle.Fill };
         private Plot plot;
 
@@ -28,16 +37,6 @@ namespace LineControl
         private bool isInitSeriesInRunningStatus = false;
 
         private Save saveData = new Save();
-
-        private string token = "n3rzVj62MZmpisZyy4VSlKaXc8IFMvHsWhQLzxsGXWZlRX5hzSVloAvCrLEacRDj1cS2x0uHUCGAhzR-lH99NQ==";
-
-        private string orgID = "d726b22e0ead9045";
-
-        private string projectGuid = "4B2DC4D9-38ED-42B8-6E2E-4665F0B54672";
-
-        // 用于office测试
-        //private static readonly string token = "NaoGum6B86URgxT9T5Pwyzn6w_O8wz1bPBEGF_pJQJ0oNCb0lEHX0uXRkNNQl8PvmL74T3RIaowshUpPzt-QCw==";
-        //private string orgID = "9a08e84e2e95f668";
 
         #endregion
 
@@ -588,39 +587,36 @@ namespace LineControl
             //formsPlot.Plot.Axes.DateTimeTicksBottom();
 
             // 测试2
-            var count = 3;
-            var minValues = new float[count];
-            var maxValues = new float[count];
-            var val = 0.0f;
+            //var count = 3;
+            //var minValues = new float[count];
+            //var maxValues = new float[count];
+            //var val = 0.0f;
+            //for (var i = 0; i < count; i++)
+            //{
+            //    minValues[i] = val;
+            //    maxValues[i] = val + 50;
+            //    val++;
 
-            for (var i = 0; i < count; i++)
-            {
-                minValues[i] = val;
-                maxValues[i] = val + 50;
-                val++;
+            //    if (val > 100)
+            //    {
+            //        val = 0;
+            //    }
+            //}
 
-                if (val > 100)
-                {
-                    val = 0;
-                }
-            }
+            //for (int i = 0; i < count; i++)
+            //{
+            //    var time = DateTime.Now + TimeSpan.FromSeconds(i);
+            //    var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
+            //    line.LineColor = ScottPlot.Colors.White;
 
-            for (var i = 0; i < count; i++)
-            {
-                var time = DateTime.Now + TimeSpan.FromSeconds(i);
-                var line = plot.Add.Line(time.ToOADate(), minValues[i],
-                    time.ToOADate(), maxValues[i]);
-                line.LineColor = ScottPlot.Colors.White;
-
-                if (i != count - 1)
-                {
-                    var timeMinAndMax = time + TimeSpan.FromSeconds(1);
-                    var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i],
-                        timeMinAndMax.ToOADate(), minValues[i+1]);
-                    lineMinAndMax.LineColor = ScottPlot.Colors.White;
-                }
-            }
-            plot.Axes.DateTimeTicksBottom();
+            //    if (i != count - 1)
+            //    {
+            //        var timeMinAndMax = time + TimeSpan.FromSeconds(1);
+            //        var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
+            //        lineMinAndMax.LineColor = ScottPlot.Colors.White;
+            //    }
+            //}
+            //plot.Axes.DateTimeTicksBottom();
 
             #endregion
 
@@ -767,7 +763,7 @@ namespace LineControl
 
             // 获取点的个数
             var count = 0;
-            using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
+            using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
             {
                 // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
                 var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
@@ -819,7 +815,7 @@ namespace LineControl
             var yMaxValues = new List<double>();
             var yMinValues = new List<double>();
 
-            using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
+            using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
             {
                 // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
                 var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
@@ -884,7 +880,7 @@ namespace LineControl
         {
             var dateTimes = new List<DateTime>();
             var yValues = new List<double>();
-            using (var influxDBClient = new InfluxDBClient("http://localhost:8086", token))
+            using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
             {
                 // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
                 var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
@@ -919,6 +915,66 @@ namespace LineControl
             plot.Axes.DateTimeTicksBottom();
             plot.Axes.Right.MinimumSize = 50;
             formsPlot.Refresh();
+        }
+
+        #endregion
+
+        #region 导出
+
+        private void btExport_Click(object sender, EventArgs e)
+        {
+            if (!isRuning)
+                return;
+
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "Png 图片|*.png";
+            dialog.FilterIndex = 0;
+            dialog.RestoreDirectory = true;//保存对话框是否记忆上次打开的目录
+            dialog.CheckPathExists = true;//检查目录
+
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
+                
+            plot.SavePng(dialog.FileName, formsPlot.Width, formsPlot.Height);
+            MessageBox.Show("图片保存成功.", "信息提示");
+        }
+
+        #endregion
+
+        #region 打印
+
+        private void btPrintPreview_Click(object sender, EventArgs e)
+        {
+            if (!isRuning)
+                return;
+
+            var printDocument = new PrintDocument();
+            printDocument.PrintPage += new PrintPageEventHandler(PrintPage);
+            var printDialog = new PrintPreviewDialog { Document = printDocument };
+            printDialog.ShowDialog();
+        }
+
+        private void btPrint_Click(object sender, EventArgs e)
+        {
+            if (!isRuning)
+                return;
+
+            var printDocument = new PrintDocument();
+            printDocument.PrintPage += new PrintPageEventHandler(PrintPage);
+            var printDialog = new PrintDialog { Document = printDocument };
+            if (printDialog.ShowDialog() == DialogResult.OK)
+                printDocument.Print();
+        }
+
+        private void PrintPage(object sender, PrintPageEventArgs e)
+        {
+            // Determine how large you want the plot to be on the page and resize accordingly
+            int width = e.MarginBounds.Width;
+            int height = (int)(e.MarginBounds.Width * .5);
+
+            // Render the plot as a Bitmap and draw it onto the page
+            var image = plot.GetImage(width, height);
+            e.Graphics.DrawImage(image.GetBitmap(), e.MarginBounds.Left, e.MarginBounds.Top);
         }
 
         #endregion

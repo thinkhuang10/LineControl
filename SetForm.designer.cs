@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -76,18 +74,14 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.DeleteLineButton = new System.Windows.Forms.Button();
             this.AddLineButton = new System.Windows.Forms.Button();
-            this.LineDataGrid = new System.Windows.Forms.DataGridView();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.YAxisMax = new System.Windows.Forms.TextBox();
             this.YAxisMin = new System.Windows.Forms.TextBox();
-            this.XAxisMax = new System.Windows.Forms.TextBox();
-            this.XAxisMin = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
             this.ExitButton = new System.Windows.Forms.Button();
+            this.listBoxVar = new System.Windows.Forms.ListBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -95,7 +89,6 @@
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.LineDataGrid)).BeginInit();
             this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -575,9 +568,9 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.listBoxVar);
             this.tabPage2.Controls.Add(this.DeleteLineButton);
             this.tabPage2.Controls.Add(this.AddLineButton);
-            this.tabPage2.Controls.Add(this.LineDataGrid);
             this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Location = new System.Drawing.Point(4, 29);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -590,7 +583,7 @@
             // 
             // DeleteLineButton
             // 
-            this.DeleteLineButton.Location = new System.Drawing.Point(178, 510);
+            this.DeleteLineButton.Location = new System.Drawing.Point(588, 584);
             this.DeleteLineButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.DeleteLineButton.Name = "DeleteLineButton";
             this.DeleteLineButton.Size = new System.Drawing.Size(160, 38);
@@ -601,7 +594,7 @@
             // 
             // AddLineButton
             // 
-            this.AddLineButton.Location = new System.Drawing.Point(9, 510);
+            this.AddLineButton.Location = new System.Drawing.Point(420, 584);
             this.AddLineButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.AddLineButton.Name = "AddLineButton";
             this.AddLineButton.Size = new System.Drawing.Size(160, 38);
@@ -610,62 +603,24 @@
             this.AddLineButton.UseVisualStyleBackColor = true;
             this.AddLineButton.Click += new System.EventHandler(this.AddLineButton_Click);
             // 
-            // LineDataGrid
-            // 
-            this.LineDataGrid.AllowUserToAddRows = false;
-            this.LineDataGrid.AllowUserToDeleteRows = false;
-            this.LineDataGrid.AllowUserToOrderColumns = true;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.LineDataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.LineDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.LineDataGrid.DefaultCellStyle = dataGridViewCellStyle4;
-            this.LineDataGrid.Location = new System.Drawing.Point(9, 153);
-            this.LineDataGrid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.LineDataGrid.Name = "LineDataGrid";
-            this.LineDataGrid.ReadOnly = true;
-            this.LineDataGrid.RowHeadersVisible = false;
-            this.LineDataGrid.RowHeadersWidth = 62;
-            this.LineDataGrid.RowTemplate.Height = 23;
-            this.LineDataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullColumnSelect;
-            this.LineDataGrid.Size = new System.Drawing.Size(746, 347);
-            this.LineDataGrid.TabIndex = 2;
-            this.LineDataGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LineDataGrid_CellDoubleClick);
-            // 
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.YAxisMax);
             this.groupBox6.Controls.Add(this.YAxisMin);
-            this.groupBox6.Controls.Add(this.XAxisMax);
-            this.groupBox6.Controls.Add(this.XAxisMin);
             this.groupBox6.Controls.Add(this.label18);
             this.groupBox6.Controls.Add(this.label17);
-            this.groupBox6.Controls.Add(this.label16);
-            this.groupBox6.Controls.Add(this.label19);
-            this.groupBox6.Location = new System.Drawing.Point(9, 10);
+            this.groupBox6.Location = new System.Drawing.Point(385, 10);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox6.Size = new System.Drawing.Size(746, 133);
+            this.groupBox6.Size = new System.Drawing.Size(342, 538);
             this.groupBox6.TabIndex = 1;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "范围";
             // 
             // YAxisMax
             // 
-            this.YAxisMax.Location = new System.Drawing.Point(356, 78);
+            this.YAxisMax.Location = new System.Drawing.Point(111, 80);
             this.YAxisMax.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.YAxisMax.Name = "YAxisMax";
             this.YAxisMax.Size = new System.Drawing.Size(145, 26);
@@ -673,32 +628,16 @@
             // 
             // YAxisMin
             // 
-            this.YAxisMin.Location = new System.Drawing.Point(88, 78);
+            this.YAxisMin.Location = new System.Drawing.Point(111, 38);
             this.YAxisMin.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.YAxisMin.Name = "YAxisMin";
             this.YAxisMin.Size = new System.Drawing.Size(145, 26);
             this.YAxisMin.TabIndex = 1;
             // 
-            // XAxisMax
-            // 
-            this.XAxisMax.Location = new System.Drawing.Point(356, 28);
-            this.XAxisMax.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.XAxisMax.Name = "XAxisMax";
-            this.XAxisMax.Size = new System.Drawing.Size(145, 26);
-            this.XAxisMax.TabIndex = 1;
-            // 
-            // XAxisMin
-            // 
-            this.XAxisMin.Location = new System.Drawing.Point(88, 28);
-            this.XAxisMin.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.XAxisMin.Name = "XAxisMin";
-            this.XAxisMin.Size = new System.Drawing.Size(145, 26);
-            this.XAxisMin.TabIndex = 1;
-            // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(276, 85);
+            this.label18.Location = new System.Drawing.Point(31, 87);
             this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(68, 20);
@@ -708,32 +647,12 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(9, 85);
+            this.label17.Location = new System.Drawing.Point(31, 41);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(68, 20);
             this.label17.TabIndex = 0;
             this.label17.Text = "Y最小值";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(276, 35);
-            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(68, 20);
-            this.label16.TabIndex = 0;
-            this.label16.Text = "X最大值";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(9, 35);
-            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(68, 20);
-            this.label19.TabIndex = 0;
-            this.label19.Text = "X最小值";
             // 
             // OKButton
             // 
@@ -756,6 +675,15 @@
             this.ExitButton.Text = "取消";
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            // 
+            // listBoxVar
+            // 
+            this.listBoxVar.FormattingEnabled = true;
+            this.listBoxVar.ItemHeight = 20;
+            this.listBoxVar.Location = new System.Drawing.Point(18, 21);
+            this.listBoxVar.Name = "listBoxVar";
+            this.listBoxVar.Size = new System.Drawing.Size(347, 524);
+            this.listBoxVar.TabIndex = 4;
             // 
             // SetForm
             // 
@@ -782,7 +710,6 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.LineDataGrid)).EndInit();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.ResumeLayout(false);
@@ -820,14 +747,9 @@
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.DataGridView LineDataGrid;
         private System.Windows.Forms.TextBox YAxisMax;
         private System.Windows.Forms.TextBox YAxisMin;
-        private System.Windows.Forms.TextBox XAxisMax;
-        private System.Windows.Forms.TextBox XAxisMin;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button AddLineButton;
         private System.Windows.Forms.Button DeleteLineButton;
         private System.Windows.Forms.Label ChartForeColor;
@@ -849,5 +771,6 @@
         private System.Windows.Forms.TextBox RefreshInterval;
         private System.Windows.Forms.TextBox SeriesBorderWidth;
         private System.Windows.Forms.TextBox DecimalPlace;
+        private System.Windows.Forms.ListBox listBoxVar;
     }
 }

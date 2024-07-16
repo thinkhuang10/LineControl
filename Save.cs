@@ -67,8 +67,12 @@ namespace LineControl
 
         public int refreshInterval = 1000;
 
-        public List<PointInfo> pointInfos = new List<PointInfo>();
+        //public List<LineInfo> lineInfos = new List<LineInfo>();
 
-        public List<LineInfo> lineInfos = new List<LineInfo>();
+        // TODO：方便测试
+        public List<LineInfo> lineInfos = new List<LineInfo>() {
+            new LineInfo(){ Name="Tag7",LineColor = Color.Green},
+            new LineInfo(){ Name="Tag3",LineColor = Color.Red}
+        };
     }
 }

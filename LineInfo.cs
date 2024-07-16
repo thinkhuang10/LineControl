@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace LineControl
@@ -7,8 +6,9 @@ namespace LineControl
     [Serializable]
     public class LineInfo
     {
+        public string Name { set; get; }
+
         public Color LineColor { set; get; }
 
-        public List<PointInfo> PointInfos = new List<PointInfo>();
     }
 }
