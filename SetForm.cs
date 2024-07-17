@@ -1,7 +1,5 @@
 ﻿using CommonSnappableTypes;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace LineControl
@@ -10,7 +8,6 @@ namespace LineControl
     {
         private readonly Save saveData;
         private readonly ColorDialog colorDialog = new ColorDialog();
-        private const string LineGridViewFirstColumnName = "No";
 
         public event GetVarTable GetVarTableEvent;
 
@@ -26,6 +23,7 @@ namespace LineControl
             ChartBackColor.BackColor = saveData.chartBackColor;
             GridColor.BackColor = saveData.gridColor;
             AxisLabelColor.BackColor = saveData.axisLabelColor;
+
             HorizonalGridCount.Text = saveData.horizonalGridCount.ToString();
             VerticalGridCount.Text = saveData.verticalGridCount.ToString();
 
@@ -40,13 +38,6 @@ namespace LineControl
             YAxisTitle.Text = saveData.yAxisTitle;
             YAxisTitleForeColor.BackColor = saveData.yAxisTitleForeColor;
             YAxisTitleSize.Text = saveData.yAxisTitleSize.ToString();
-
-            DecimalPlace.Text = saveData.decimalPlace.ToString();
-            SeriesBorderWidth.Text = saveData.seriesBorderWidth.ToString();
-            RefreshInterval.Text = saveData.refreshInterval.ToString();
-
-            YAxisMin.Text = saveData.yAxisMin.ToString();
-            YAxisMax.Text = saveData.yAxisMax.ToString();
         }
 
         private void OKButton_Click(object sender, EventArgs e)
@@ -88,44 +79,6 @@ namespace LineControl
                 return;
             }
 
-            if (!int.TryParse(DecimalPlace.Text.Trim(), out int decimalPlace))
-            {
-                MessageBox.Show("请输入正确的小数位数.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!int.TryParse(SeriesBorderWidth.Text.Trim(), out int seriesBorderWidth)
-                || seriesBorderWidth <= 0)
-            {
-                MessageBox.Show("请输入正确的曲线宽度.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!int.TryParse(RefreshInterval.Text.Trim(), out int refreshInterval)
-                || refreshInterval <= 0)
-            {
-                MessageBox.Show("请输入正确的刷新时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!int.TryParse(YAxisMin.Text.Trim(), out int yAxisMin))
-            {
-                MessageBox.Show("请输入正确的Y最小值.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!int.TryParse(YAxisMax.Text.Trim(), out int yAxisMax))
-            {
-                MessageBox.Show("请输入正确的Y最大值.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (yAxisMin >= yAxisMax)
-            {
-                MessageBox.Show("请输入正确的Y最小值和最大值.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             #endregion
 
             #region 保存配置到序列化文件中
@@ -149,13 +102,6 @@ namespace LineControl
             saveData.yAxisTitle = YAxisTitle.Text.Trim();
             saveData.yAxisTitleForeColor = YAxisTitleForeColor.BackColor;
             saveData.yAxisTitleSize = yAxisTitleSize;
-
-            saveData.decimalPlace = decimalPlace;
-            saveData.seriesBorderWidth = seriesBorderWidth;
-            saveData.refreshInterval = refreshInterval;
-
-            saveData.yAxisMin = yAxisMin;
-            saveData.yAxisMax = yAxisMax;
 
             //saveData.lineInfos.Clear();
 

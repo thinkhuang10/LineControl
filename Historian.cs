@@ -2,6 +2,8 @@
 using InfluxDB.Client;
 using LineControl.Properties;
 using ScottPlot;
+using ScottPlot.Control;
+using ScottPlot.TickGenerators;
 using ScottPlot.WinForms;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ using System.IO;
 using System.Resources;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LineControl
 {
@@ -572,7 +575,7 @@ namespace LineControl
 
             #region 用于测试
 
-            isRuning = true;
+            //isRuning = true;
 
             // 测试1
             //var width = formsPlot.Width;
@@ -587,49 +590,56 @@ namespace LineControl
             //formsPlot.Plot.Axes.DateTimeTicksBottom();
 
             // 测试2
-            //var count = 3;
-            //var minValues = new float[count];
-            //var maxValues = new float[count];
-            //var val = 0.0f;
-            //for (var i = 0; i < count; i++)
-            //{
-            //    minValues[i] = val;
-            //    maxValues[i] = val + 50;
-            //    val++;
+            var count = 1000;
+            var minValues = new float[count];
+            var maxValues = new float[count];
+            var val = 0.0f;
+            for (var i = 0; i < count; i++)
+            {
+                minValues[i] = val;
+                maxValues[i] = val + 50;
+                val++;
 
-            //    if (val > 100)
-            //    {
-            //        val = 0;
-            //    }
-            //}
+                if (val > 100)
+                {
+                    val = 0;
+                }
+            }
 
-            //for (int i = 0; i < count; i++)
-            //{
-            //    var time = DateTime.Now + TimeSpan.FromSeconds(i);
-            //    var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
-            //    line.LineColor = ScottPlot.Colors.White;
+            for (int i = 0; i < count; i++)
+            {
+                var time = DateTime.Now + TimeSpan.FromSeconds(i);
+                var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
+                line.LineColor = ScottPlot.Colors.Red;
 
-            //    if (i != count - 1)
-            //    {
-            //        var timeMinAndMax = time + TimeSpan.FromSeconds(1);
-            //        var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
-            //        lineMinAndMax.LineColor = ScottPlot.Colors.White;
-            //    }
-            //}
-            //plot.Axes.DateTimeTicksBottom();
+                if (i != count - 1)
+                {
+                    var timeMinAndMax = time + TimeSpan.FromSeconds(1);
+                    var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
+                    lineMinAndMax.LineColor = ScottPlot.Colors.Red;
+                }
+            }
+            plot.Axes.DateTimeTicksBottom();
 
             #endregion
 
-            SetTitle();
-            SetChartArea();
+            SetPlotTitle();
+            SetPlotStyle();
             SetGridAndAxisInterval();
+            RefreshPlot();
         }
 
         private void InitPlot()
         {
             plot = formsPlot.Plot;
-            panelChart.DoubleClick += chart_DoubleClick;
             panelChart.Controls.Add(formsPlot);
+
+            // 屏蔽ScottPlot自带的双击显示
+            PlotActions customActions = PlotActions.Standard();
+            customActions.ToggleBenchmark = delegate { };
+            formsPlot.Interaction.Enable(customActions);
+
+            formsPlot.DoubleClick += chart_DoubleClick;
         }
 
         private void InitDateTime()
@@ -642,46 +652,50 @@ namespace LineControl
 
         #region 设置曲线
 
-        private void SetTitle()
+        private void SetPlotTitle()
         {
             if (string.IsNullOrEmpty(saveData.chartTitle))
                 return;
 
             plot.Title(saveData.chartTitle);                                // 设置标题文本
-            plot.Font.Automatic();                                          // 避免中文字符显示乱码
+                                       
             plot.Axes.Title.Label.ForeColor = ScottPlot.Color.FromColor(saveData.chartTitleColor);   // 设置标题颜色
             plot.Axes.Title.Label.FontSize = saveData.chartTitleSize;       // 设置标题字体大小
             plot.Axes.Title.Label.Bold = saveData.chartTitleIsBold;         // 设置标题是否为粗体           
         }
 
-        private void SetChartArea()
+        private void SetPlotStyle()
         {
-            plot.FigureBackground.Color = ScottPlot.Color.FromColor(saveData.chartBackColor);   // 设置背景色
-            plot.DataBackground.Color = ScottPlot.Color.FromColor(saveData.chartForeColor);     // 设置前景色
+            // 设置背景色和前景色
+            plot.FigureBackground.Color = ScottPlot.Color.FromColor(saveData.chartBackColor);   
+            plot.DataBackground.Color = ScottPlot.Color.FromColor(saveData.chartForeColor);    
 
-            // 根据配置的曲线设置轴最大值和最小值
-            //chartArea.AxisX.Minimum = saveData.xAxisMin;        // 设置X轴最小值
-            //chartArea.AxisX.Maximum = saveData.xAxisMax;        // 设置X轴最大值
-            //chartArea.AxisY.Minimum = saveData.yAxisMin;        // 设置Y轴最小值
-            //chartArea.AxisY.Maximum = saveData.yAxisMax;        // 设置Y轴最大值
+            // 设置标注颜色
+            plot.Axes.Bottom.MinorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Bottom.MajorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Bottom.FrameLineStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Bottom.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Left.MinorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Left.MajorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Left.FrameLineStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Left.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(saveData.axisLabelColor);
 
-            //// 设置标注颜色
-            //chartArea.AxisX.LabelStyle = new LabelStyle { ForeColor = saveData.axisLabelColor };
-            //chartArea.AxisY.LabelStyle = new LabelStyle { ForeColor = saveData.axisLabelColor };
+            // 设置X轴Label信息
+            plot.Axes.Bottom.Label.Text = saveData.xAxisTitle;
+            plot.Axes.Bottom.Label.ForeColor = ScottPlot.Color.FromColor(saveData.xAxisTitleForeColor);
+            plot.Axes.Bottom.Label.FontSize = saveData.xAxisTitleSize;
 
-            //chartArea.AxisX.Title = saveData.xAxisTitle;                    // 设置X信息
-            //chartArea.AxisX.TitleForeColor = saveData.xAxisTitleForeColor;  // 设置X信息颜色
-            //chartArea.AxisX.TitleFont = new Font(FontFamily.GenericSansSerif, 
-            //    saveData.xAxisTitleSize,     // 设置X信息字体大小
-            //    saveData.xAxisTitleIsBold ? FontStyle.Bold : FontStyle.Regular);    // 设置X信息是否为粗体
+            // 设置Y轴Label信息
+            plot.Axes.Left.Label.Text = saveData.yAxisTitle;                    
+            plot.Axes.Left.Label.ForeColor = ScottPlot.Color.FromColor(saveData.yAxisTitleForeColor); 
+            plot.Axes.Left.Label.FontSize = saveData.yAxisTitleSize;
 
-            //chartArea.AxisY.Title = saveData.yAxisTitle;                    // 设置Y信息
-            //chartArea.AxisY.TitleForeColor = saveData.yAxisTitleForeColor;  // 设置Y信息颜色
-            //chartArea.AxisY.TitleFont = new Font(FontFamily.GenericSansSerif, 
-            //    saveData.yAxisTitleSize,     // 设置Y信息字体大小
-            //    saveData.yAxisTitleIsBold ? FontStyle.Bold : FontStyle.Regular);    // 设置Y信息是否为粗体
+            // 设置网格颜色
+            plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(saveData.gridColor).WithOpacity(.5);
+            plot.Grid.MinorLineColor = ScottPlot.Color.FromColor(saveData.gridColor).WithOpacity(.5);
 
-            //xyChart.ChartAreas.Add(chartArea);
+            // 设置网格间隔
+            plot.Axes.Left.TickGenerator = new NumericFixedInterval(30);
         }
 
         private void SetGridAndAxisInterval()
@@ -733,17 +747,16 @@ namespace LineControl
             if (DialogResult.OK != form.ShowDialog())
                 return;
 
-            ClearChart();
-            SetTitle();
-            SetChartArea();
+            SetPlotTitle();
+            SetPlotStyle();
             SetGridAndAxisInterval();
+            RefreshPlot();
         }
 
-        private void ClearChart()
+        private void RefreshPlot()
         {
-            //xyChart.Series.Clear();
-            //xyChart.ChartAreas.Clear();
-            //xyChart.Titles.Clear();
+            plot.Font.Automatic();// 避免中文字符显示乱码
+            formsPlot.Refresh();
         }
 
         #endregion

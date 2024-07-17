@@ -7,6 +7,7 @@ namespace LineControl
     [Serializable]
     public class Save
     {
+        // 曲线画板颜色
         public Color chartForeColor = Color.Black;
 
         public Color chartBackColor = Color.Gray;

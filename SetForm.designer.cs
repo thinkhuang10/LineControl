@@ -30,14 +30,6 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.RefreshInterval = new System.Windows.Forms.TextBox();
-            this.SeriesBorderWidth = new System.Windows.Forms.TextBox();
-            this.DecimalPlace = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.YAxisTitleForeColor = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
@@ -72,6 +64,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.listBoxVar = new System.Windows.Forms.ListBox();
             this.DeleteLineButton = new System.Windows.Forms.Button();
             this.AddLineButton = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
@@ -81,10 +74,16 @@
             this.label17 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
             this.ExitButton = new System.Windows.Forms.Button();
-            this.listBoxVar = new System.Windows.Forms.ListBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -105,7 +104,6 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.groupBox5);
             this.tabPage1.Controls.Add(this.groupBox4);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
@@ -118,88 +116,6 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "常规";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.RefreshInterval);
-            this.groupBox5.Controls.Add(this.SeriesBorderWidth);
-            this.groupBox5.Controls.Add(this.DecimalPlace);
-            this.groupBox5.Controls.Add(this.label15);
-            this.groupBox5.Controls.Add(this.label9);
-            this.groupBox5.Controls.Add(this.label14);
-            this.groupBox5.Controls.Add(this.label13);
-            this.groupBox5.Location = new System.Drawing.Point(8, 458);
-            this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox5.Size = new System.Drawing.Size(746, 158);
-            this.groupBox5.TabIndex = 0;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "其他";
-            // 
-            // RefreshInterval
-            // 
-            this.RefreshInterval.Location = new System.Drawing.Point(129, 98);
-            this.RefreshInterval.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.RefreshInterval.Name = "RefreshInterval";
-            this.RefreshInterval.Size = new System.Drawing.Size(92, 28);
-            this.RefreshInterval.TabIndex = 4;
-            // 
-            // SeriesBorderWidth
-            // 
-            this.SeriesBorderWidth.Location = new System.Drawing.Point(351, 40);
-            this.SeriesBorderWidth.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.SeriesBorderWidth.Name = "SeriesBorderWidth";
-            this.SeriesBorderWidth.Size = new System.Drawing.Size(92, 28);
-            this.SeriesBorderWidth.TabIndex = 3;
-            // 
-            // DecimalPlace
-            // 
-            this.DecimalPlace.Location = new System.Drawing.Point(129, 40);
-            this.DecimalPlace.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.DecimalPlace.Name = "DecimalPlace";
-            this.DecimalPlace.Size = new System.Drawing.Size(92, 28);
-            this.DecimalPlace.TabIndex = 2;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(232, 103);
-            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(44, 18);
-            this.label15.TabIndex = 0;
-            this.label15.Text = "毫秒";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(260, 45);
-            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(80, 18);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "曲线线宽";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(22, 103);
-            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(80, 18);
-            this.label14.TabIndex = 0;
-            this.label14.Text = "刷新时间";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(22, 45);
-            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(62, 18);
-            this.label13.TabIndex = 0;
-            this.label13.Text = "小数位";
             // 
             // groupBox4
             // 
@@ -581,6 +497,15 @@
             this.tabPage2.Text = "数据";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // listBoxVar
+            // 
+            this.listBoxVar.FormattingEnabled = true;
+            this.listBoxVar.ItemHeight = 20;
+            this.listBoxVar.Location = new System.Drawing.Point(18, 21);
+            this.listBoxVar.Name = "listBoxVar";
+            this.listBoxVar.Size = new System.Drawing.Size(347, 524);
+            this.listBoxVar.TabIndex = 4;
+            // 
             // DeleteLineButton
             // 
             this.DeleteLineButton.Location = new System.Drawing.Point(588, 584);
@@ -605,6 +530,14 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.label20);
+            this.groupBox6.Controls.Add(this.label19);
+            this.groupBox6.Controls.Add(this.textBox3);
+            this.groupBox6.Controls.Add(this.label16);
+            this.groupBox6.Controls.Add(this.textBox2);
+            this.groupBox6.Controls.Add(this.label6);
+            this.groupBox6.Controls.Add(this.textBox1);
+            this.groupBox6.Controls.Add(this.label5);
             this.groupBox6.Controls.Add(this.YAxisMax);
             this.groupBox6.Controls.Add(this.YAxisMin);
             this.groupBox6.Controls.Add(this.label18);
@@ -640,9 +573,9 @@
             this.label18.Location = new System.Drawing.Point(31, 87);
             this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(68, 20);
+            this.label18.Size = new System.Drawing.Size(110, 30);
             this.label18.TabIndex = 0;
-            this.label18.Text = "Y最大值";
+            this.label18.Text = "量程上限";
             // 
             // label17
             // 
@@ -650,9 +583,9 @@
             this.label17.Location = new System.Drawing.Point(31, 41);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(68, 20);
+            this.label17.Size = new System.Drawing.Size(110, 30);
             this.label17.TabIndex = 0;
-            this.label17.Text = "Y最小值";
+            this.label17.Text = "量程下限";
             // 
             // OKButton
             // 
@@ -676,14 +609,80 @@
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
-            // listBoxVar
+            // label5
             // 
-            this.listBoxVar.FormattingEnabled = true;
-            this.listBoxVar.ItemHeight = 20;
-            this.listBoxVar.Location = new System.Drawing.Point(18, 21);
-            this.listBoxVar.Name = "listBoxVar";
-            this.listBoxVar.Size = new System.Drawing.Size(347, 524);
-            this.listBoxVar.TabIndex = 4;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(28, 302);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(41, 20);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "单位";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(108, 299);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(145, 26);
+            this.textBox1.TabIndex = 3;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(108, 240);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(145, 26);
+            this.textBox2.TabIndex = 5;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(28, 243);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(41, 20);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "描述";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(108, 185);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(145, 26);
+            this.textBox3.TabIndex = 7;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(28, 188);
+            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(73, 20);
+            this.label16.TabIndex = 6;
+            this.label16.Text = "线条宽度";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(28, 143);
+            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(73, 20);
+            this.label19.TabIndex = 8;
+            this.label19.Text = "线条颜色";
+            // 
+            // label20
+            // 
+            this.label20.BackColor = System.Drawing.Color.Gray;
+            this.label20.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label20.Location = new System.Drawing.Point(111, 142);
+            this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(84, 33);
+            this.label20.TabIndex = 9;
+            this.label20.Text = "     ";
             // 
             // SetForm
             // 
@@ -701,8 +700,6 @@
             this.Load += new System.EventHandler(this.XYSetForm_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -731,10 +728,6 @@
         private System.Windows.Forms.TextBox HorizonalGridCount;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label13;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox YAxisTitle;
         private System.Windows.Forms.TextBox XAxisTitle;
@@ -742,7 +735,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.GroupBox groupBox6;
@@ -768,9 +760,14 @@
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.TextBox XAxisTitleSize;
         private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.TextBox RefreshInterval;
-        private System.Windows.Forms.TextBox SeriesBorderWidth;
-        private System.Windows.Forms.TextBox DecimalPlace;
         private System.Windows.Forms.ListBox listBoxVar;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label19;
     }
 }
