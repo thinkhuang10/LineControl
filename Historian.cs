@@ -571,7 +571,7 @@ namespace LineControl
 
             #region 用于测试
 
-            //isRuning = true;
+            isRuning = true;
 
             // 测试1
             //var width = formsPlot.Width;
