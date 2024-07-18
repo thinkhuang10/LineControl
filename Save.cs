@@ -20,10 +20,10 @@ namespace LineControl
         public Color gridColor = Color.White;
 
         // 水平网格数
-        public uint verticalGridCount = 10;
+        public int verticalGridCount = 5;
 
         // 垂直网格数
-        public uint horizonalGridCount = 10;
+        public int horizonalGridCount = 5;
 
         // 设置标题
         public string chartTitle = "历史曲线";
