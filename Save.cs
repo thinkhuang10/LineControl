@@ -10,18 +10,22 @@ namespace LineControl
         // 曲线画板颜色
         public Color chartForeColor = Color.Black;
 
+        // 曲线背景色
         public Color chartBackColor = Color.Gray;
 
-        public double xAxisMin = 0;
+        // 设置X轴和Y轴的标注颜色
+        public Color axisLabelColor = Color.Red;
 
-        public double xAxisMax = 100;
+        // 网格颜色
+        public Color gridColor = Color.White;
 
-        public double yAxisMin = 0;
+        // 水平网格数
+        public uint verticalGridCount = 10;
 
-        public double yAxisMax = 100;
+        // 垂直网格数
+        public uint horizonalGridCount = 10;
 
-        public Color axisLabelColor = Color.DarkBlue;
-
+        // 设置标题
         public string chartTitle = "历史曲线";
 
         public Color chartTitleColor = Color.Black;
@@ -30,50 +34,28 @@ namespace LineControl
 
         public bool chartTitleIsBold = false;
 
+        // 设置X轴
         public string xAxisTitle = "X轴";
-
-        public string yAxisTitle = "Y轴";
 
         public Color xAxisTitleForeColor = Color.Black;
 
-        public Color yAxisTitleForeColor = Color.Black;
-
         public float xAxisTitleSize = 10.0f;
-
-        public float yAxisTitleSize = 10.0f;
 
         public bool xAxisTitleIsBold = false;
 
+        // 设置Y轴
+        public string yAxisTitle = "Y轴";
+
+        public Color yAxisTitleForeColor = Color.Black;
+
+        public float yAxisTitleSize = 10.0f;
+
         public bool yAxisTitleIsBold = false;
 
-        public Color gridColor = Color.White;
-
-        public uint verticalGridCount = 10;
-
-        public uint horizonalGridCount = 10;
-
-        public int dynamicPointSize = 10;
-
-        public bool isShowDynamicPointLabel = true;
-
-        public float dynamicPointLabelSize = 8.0f;
-
-        public Color dynamicPointLabelBackColor = Color.White;
-
-        public Color dynamicPointLabelForeColor = Color.Black;
-
-        public int decimalPlace = 1;
-
-        public int seriesBorderWidth = 2;
-
-        public int refreshInterval = 1000;
-
-        //public List<LineInfo> lineInfos = new List<LineInfo>();
-
         // TODO：方便测试
-        public List<LineInfo> lineInfos = new List<LineInfo>() {
-            new LineInfo(){ Name="Tag7",LineColor = Color.Green},
-            new LineInfo(){ Name="Tag3",LineColor = Color.Red}
+        public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>() {
+            {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -200, UpperLimitValue = 100, LineColor = Color.Green, LineWidth =1} },
+            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -100, UpperLimitValue = 250, LineColor = Color.Red, LineWidth =2} }
         };
     }
 }

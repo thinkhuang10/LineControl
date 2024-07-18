@@ -8,7 +8,14 @@ namespace LineControl
     {
         public string Name { set; get; }
 
-        public Color LineColor { set; get; }
+        public double LowerLimitValue { set; get; } = 0;
 
+        public double UpperLimitValue { set; get; } = 100;
+
+        public Color LineColor { set; get; } = Color.White;
+
+        public int LineWidth { get; set; } = 1;
+
+        public string Description { set; get; } = string.Empty;
     }
 }

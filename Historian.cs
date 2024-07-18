@@ -4,6 +4,7 @@ using LineControl.Properties;
 using ScottPlot;
 using ScottPlot.Control;
 using ScottPlot.TickGenerators;
+using ScottPlot.TickGenerators.TimeUnits;
 using ScottPlot.WinForms;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,11 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
+using System.Linq;
 using System.Resources;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LineControl
 {
@@ -32,12 +34,6 @@ namespace LineControl
 
         private readonly FormsPlot formsPlot = new FormsPlot() { Dock = DockStyle.Fill };
         private Plot plot;
-
-        private const string ChartAreaName = "XYChartArea";
-        private const string PointSeriesName = "XYPoint";
-        private const string LineSeriesPrefixName = "XYLine";
-        private const string SpecialSeriesName = "SpecialPointForLoad";
-        private bool isInitSeriesInRunningStatus = false;
 
         private Save saveData = new Save();
 
@@ -96,7 +92,7 @@ namespace LineControl
         #region 屏蔽部分没必要显示的属性并修改部分显示属性的名称
 
         [Browsable(false)]
-        public new System.Windows.Forms.Cursor Cursor
+        public new Cursor Cursor
         {
             get
             {
@@ -589,43 +585,51 @@ namespace LineControl
 
             //formsPlot.Plot.Axes.DateTimeTicksBottom();
 
-            // 测试2
-            var count = 1000;
-            var minValues = new float[count];
-            var maxValues = new float[count];
-            var val = 0.0f;
-            for (var i = 0; i < count; i++)
-            {
-                minValues[i] = val;
-                maxValues[i] = val + 50;
-                val++;
+            //// 测试2
+            //var count = 1000;
+            //var minValues = new float[count];
+            //var maxValues = new float[count];
+            //var val = 0.0f;
+            //for (var i = 0; i < count; i++)
+            //{
+            //    minValues[i] = val;
+            //    maxValues[i] = val + 50;
+            //    val++;
 
-                if (val > 100)
-                {
-                    val = 0;
-                }
-            }
+            //    if (val > 100)
+            //    {
+            //        val = 0;
+            //    }
+            //}
 
-            for (int i = 0; i < count; i++)
-            {
-                var time = DateTime.Now + TimeSpan.FromSeconds(i);
-                var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
-                line.LineColor = ScottPlot.Colors.Red;
+            //for (int i = 0; i < count; i++)
+            //{
+            //    var time = DateTime.Now + TimeSpan.FromSeconds(i);
+            //    var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
+            //    line.LineColor = ScottPlot.Colors.Red;
 
-                if (i != count - 1)
-                {
-                    var timeMinAndMax = time + TimeSpan.FromSeconds(1);
-                    var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
-                    lineMinAndMax.LineColor = ScottPlot.Colors.Red;
-                }
-            }
-            plot.Axes.DateTimeTicksBottom();
+            //    if (i != count - 1)
+            //    {
+            //        var timeMinAndMax = time + TimeSpan.FromSeconds(1);
+            //        var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
+            //        lineMinAndMax.LineColor = ScottPlot.Colors.Red;
+            //    }
+            //}
+            //plot.Axes.DateTimeTicksBottom();
 
             #endregion
 
             SetPlotTitle();
-            SetPlotStyle();
-            SetGridAndAxisInterval();
+            SetXAxisTitle();
+            SetYAxisTitle();
+
+            SetPlotBackground();
+            SetPlotGridColor();
+            SetXAxisTick();
+
+            SetYAxisTick();
+            SetTickStyle();
+
             RefreshPlot();
         }
 
@@ -664,13 +668,114 @@ namespace LineControl
             plot.Axes.Title.Label.Bold = saveData.chartTitleIsBold;         // 设置标题是否为粗体           
         }
 
-        private void SetPlotStyle()
+        /// <summary>
+        /// 注意渲染的先后顺序,需要放在后面
+        /// 设置X轴Label信息
+        /// </summary>
+        private void SetXAxisTitle()
         {
-            // 设置背景色和前景色
-            plot.FigureBackground.Color = ScottPlot.Color.FromColor(saveData.chartBackColor);   
-            plot.DataBackground.Color = ScottPlot.Color.FromColor(saveData.chartForeColor);    
+            plot.Axes.Bottom.Label.Text = saveData.xAxisTitle;
+            plot.Axes.Bottom.Label.ForeColor = ScottPlot.Color.FromColor(saveData.xAxisTitleForeColor);
+            plot.Axes.Bottom.Label.FontSize = saveData.xAxisTitleSize;
+        }
 
-            // 设置标注颜色
+        /// <summary>
+        /// 设置Y轴Label信息
+        /// </summary>
+        private void SetYAxisTitle()
+        {
+            plot.Axes.Left.Label.Text = saveData.yAxisTitle;
+            plot.Axes.Left.Label.ForeColor = ScottPlot.Color.FromColor(saveData.yAxisTitleForeColor);
+            plot.Axes.Left.Label.FontSize = saveData.yAxisTitleSize;
+        }
+
+        /// <summary>
+        /// 设置背景色和前景色
+        /// </summary>
+        private void SetPlotBackground()
+        {
+            plot.FigureBackground.Color = ScottPlot.Color.FromColor(saveData.chartBackColor);
+            plot.DataBackground.Color = ScottPlot.Color.FromColor(saveData.chartForeColor);
+        }
+
+        /// <summary>
+        /// 设置网格颜色
+        /// </summary>
+        private void SetPlotGridColor()
+        {
+            plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(saveData.gridColor).WithOpacity(.5);
+            plot.Grid.MinorLineColor = ScottPlot.Color.FromColor(saveData.gridColor).WithOpacity(.5);
+        }
+
+        /// <summary>
+        /// 设置X轴网格间隔
+        /// 特殊处理：添加曲线，为了在非运行状态下画出X轴
+        /// </summary>
+        private void SetXAxisTick()
+        {
+            // 严格分割网格
+            var dateDoubles = new DateTime[saveData.verticalGridCount];
+            double[] valueDoubles = new double[saveData.verticalGridCount];
+            var startTime = startDtp.Value;
+            var endTime = endDtp.Value;
+            var timeGap = endTime.Subtract(startTime).TotalSeconds / saveData.verticalGridCount;
+            for (int i = 0; i < saveData.verticalGridCount; i++)
+            {
+                dateDoubles[i] = startTime + TimeSpan.FromSeconds(i * timeGap);
+                valueDoubles[i] = 0;
+            }
+            var line = plot.Add.Scatter(dateDoubles, valueDoubles);
+            line.Color = Colors.Transparent;    // 曲线设置为看不见
+
+            plot.Axes.SetLimitsX(startTime.ToOADate(), endTime.ToOADate());
+            var dtx = plot.Axes.DateTimeTicksBottom();
+            dtx.TickGenerator = new DateTimeFixedInterval(new Second(), (int)timeGap);
+        }
+
+        /// <summary>
+        /// 设置Y轴网格间隔
+        /// 没有设置曲线,Y轴最大最小范围为0~100
+        /// </summary>
+        private void SetYAxisTick()
+        {
+            // 严格分割网格
+            //if (saveData.lineInfos.Count == 0)
+            //{
+            //    plot.Axes.Left.TickGenerator = new NumericFixedInterval(100 / saveData.horizonalGridCount);
+            //    plot.Axes.SetLimitsY(0, 100);
+            //}
+            //else
+            //{
+            //    var max = saveData.lineInfos.Values.Max(x => x.UpperLimitValue);
+            //    var min = saveData.lineInfos.Values.Min(x => x.LowerLimitValue);
+
+            //    var interval = (int)((max - min) / saveData.horizonalGridCount);
+            //    plot.Axes.Left.TickGenerator = new NumericFixedInterval(interval);
+            //    plot.Axes.SetLimitsY(min, max);
+            //}
+
+            // 自动化分割网格
+            plot.Axes.Left.TickGenerator = new NumericAutomatic
+            {
+                TargetTickCount = saveData.horizonalGridCount,
+            };
+            if (saveData.lineInfos.Count == 0)
+            {
+                plot.Axes.SetLimitsY(0, 100);
+            }
+            else
+            {
+                var max = saveData.lineInfos.Values.Max(x => x.UpperLimitValue);
+                var min = saveData.lineInfos.Values.Min(x => x.LowerLimitValue);
+                plot.Axes.SetLimitsY(min, max);
+            }
+        }
+
+        /// <summary>
+        /// 设置标注颜色
+        /// </summary>
+        private void SetTickStyle()
+        {
             plot.Axes.Bottom.MinorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
             plot.Axes.Bottom.MajorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
             plot.Axes.Bottom.FrameLineStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
@@ -679,62 +784,6 @@ namespace LineControl
             plot.Axes.Left.MajorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
             plot.Axes.Left.FrameLineStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
             plot.Axes.Left.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(saveData.axisLabelColor);
-
-            // 设置X轴Label信息
-            plot.Axes.Bottom.Label.Text = saveData.xAxisTitle;
-            plot.Axes.Bottom.Label.ForeColor = ScottPlot.Color.FromColor(saveData.xAxisTitleForeColor);
-            plot.Axes.Bottom.Label.FontSize = saveData.xAxisTitleSize;
-
-            // 设置Y轴Label信息
-            plot.Axes.Left.Label.Text = saveData.yAxisTitle;                    
-            plot.Axes.Left.Label.ForeColor = ScottPlot.Color.FromColor(saveData.yAxisTitleForeColor); 
-            plot.Axes.Left.Label.FontSize = saveData.yAxisTitleSize;
-
-            // 设置网格颜色
-            plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(saveData.gridColor).WithOpacity(.5);
-            plot.Grid.MinorLineColor = ScottPlot.Color.FromColor(saveData.gridColor).WithOpacity(.5);
-
-            // 设置网格间隔
-            plot.Axes.Left.TickGenerator = new NumericFixedInterval(30);
-        }
-
-        private void SetGridAndAxisInterval()
-        {
-            //xyChart.ChartAreas[ChartAreaName].AxisX.MajorGrid.Enabled = true;
-            //xyChart.ChartAreas[ChartAreaName].AxisX.MajorGrid.LineColor = saveData.gridColor;
-            //xyChart.ChartAreas[ChartAreaName].AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Solid;
-            //xyChart.ChartAreas[ChartAreaName].AxisX.MajorGrid.IntervalType = DateTimeIntervalType.Number;
-            //var xInterval = (saveData.xAxisMax - saveData.xAxisMin) / saveData.verticalGridCount;
-            //xyChart.ChartAreas[ChartAreaName].AxisX.MajorGrid.Interval = xInterval;
-            //xyChart.ChartAreas[ChartAreaName].AxisX.Interval = xInterval;
-
-            //xyChart.ChartAreas[ChartAreaName].AxisY.MajorGrid.Enabled = true;
-            //xyChart.ChartAreas[ChartAreaName].AxisY.MajorGrid.LineColor = saveData.gridColor;
-            //xyChart.ChartAreas[ChartAreaName].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Solid;
-            //xyChart.ChartAreas[ChartAreaName].AxisY.MajorGrid.IntervalType = DateTimeIntervalType.Number;
-            //var yInterval = (saveData.yAxisMax - saveData.yAxisMin) / saveData.horizonalGridCount;
-            //xyChart.ChartAreas[ChartAreaName].AxisY.MajorGrid.Interval = yInterval;
-            //xyChart.ChartAreas[ChartAreaName].AxisY.Interval = yInterval;
-        }
-
-        private void SetSeriesStyle()
-        {
-            //// 提前初始化曲线,定时器中不要周期执行
-            //// TODO: 尝试提高曲线绘制效率
-            //for (var i = 0; i < saveData.lineInfos.Count; i++)
-            //{
-            //    var series = xyChart.Series.Add($"{LineSeriesPrefixName}{i}");
-            //    series.BorderWidth = saveData.seriesBorderWidth;    // 曲线宽度
-            //    series.Color = saveData.lineInfos[i].LineColor;
-            //    series.ChartArea = ChartAreaName;
-            //    series.ChartType = SeriesChartType.Line;
-            //}
-
-            //var pointSeries = xyChart.Series.Add(PointSeriesName);
-            //pointSeries.ChartArea = ChartAreaName;
-            //pointSeries.ChartType = SeriesChartType.Point;
-            //pointSeries.MarkerStyle = MarkerStyle.Circle;
-            //pointSeries.MarkerSize = saveData.dynamicPointSize;
         }
 
         private void chart_DoubleClick(object sender, EventArgs e)
@@ -748,8 +797,16 @@ namespace LineControl
                 return;
 
             SetPlotTitle();
-            SetPlotStyle();
-            SetGridAndAxisInterval();
+            SetXAxisTitle();
+            SetYAxisTitle();
+
+            SetPlotBackground();
+            SetPlotGridColor();
+
+            SetXAxisTick();
+            SetYAxisTick();
+            SetTickStyle();
+
             RefreshPlot();
         }
 
@@ -774,7 +831,39 @@ namespace LineControl
                 return;
             }
 
-            // 获取点的个数
+            if (saveData.lineInfos.Count == 0)
+                return;
+
+            foreach (var tagName in saveData.lineInfos.Keys)
+            { 
+                var lineInfo = saveData.lineInfos[tagName];
+                var linePointCount = await GetLinePointCount(tagName);
+
+                RenderLines(lineInfo, linePointCount);
+            }
+        }
+
+        private void RenderLines(LineInfo lineInfo,int linePointCount)
+        {
+            plot.Clear();
+
+            var plotWidth = formsPlot.Width;     // 获取控件的像素点数
+            if (linePointCount > plotWidth)
+            {
+                var totalSeconds = (endDtp.Value - startDtp.Value).TotalSeconds;
+                var gapSecond = ((int)totalSeconds) / plotWidth;
+                RenderLineByOptimize(lineInfo.Name, gapSecond);
+            }
+            else
+            {
+                RenderLineByNormal(lineInfo);
+            }
+
+            formsPlot.Refresh();
+        }
+
+        private async Task<int> GetLinePointCount(string tagName)
+        {
             var count = 0;
             using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
             {
@@ -786,16 +875,8 @@ namespace LineControl
                 var fluxCount = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
                     "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")" + Environment.NewLine +
+                    $"|> filter(fn: (r) => r[\"name\"] == \"{tagName}\")" + Environment.NewLine +
                     "|> count()";
-
-                //var fluxCount = "import \"strings\"" + Environment.NewLine +
-                //    "from(bucket: \"TestBucket\")" + Environment.NewLine +
-                //    "|> range(start: 2022-01-01T08:00:00Z, stop: 2022-01-01T20:00:01Z)" + Environment.NewLine +
-                //    "|> filter(fn: (r) => strings.containsStr(v: r.room, substr: \"Kit\") == true)" + Environment.NewLine +
-                //    "|> toString()" + Environment.NewLine +
-                //    "|> group(columns: [\"_measurement\"])" + Environment.NewLine +
-                //    "|> count()";
 
                 var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxCount, orgID);
                 fluxCountTable.ForEach(fluxTable =>
@@ -808,21 +889,10 @@ namespace LineControl
                 });
             }
 
-            // 获取控件的像素点数
-            var plotWidth = formsPlot.Width;
-            if (count > plotWidth)
-            {
-                var totalSeconds = (endDtp.Value - startDtp.Value).TotalSeconds;
-                var gapSecond = ((int)totalSeconds) / plotWidth;
-                RenderLineByOptimize(gapSecond);
-            }
-            else
-            {
-                RenderLineByNormal();
-            }
+            return count;
         }
 
-        private async void RenderLineByOptimize(double gapSecond)
+        private async void RenderLineByOptimize(string tagName, double gapSecond)
         {
             var dateTimes = new List<DateTime>();
             var yMaxValues = new List<double>();
@@ -837,7 +907,7 @@ namespace LineControl
                 var fluxMax = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
                     "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")" + Environment.NewLine +
+                    $"|> filter(fn: (r) => r[\"name\"] == \"{tagName}\")" + Environment.NewLine +
                     $"|> aggregateWindow(every: {gapSecond}s, fn: max)";
 
                 var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxMax, orgID);
@@ -876,7 +946,6 @@ namespace LineControl
                 });
             }
 
-            plot.Clear();
             //var dateTimesArray = dateTimes.ToArray();
             //var yValuesArray = yMaxValues.ToArray();
             //for (int i = 0; i < dateTimes.Count; i++)
@@ -886,10 +955,10 @@ namespace LineControl
             //    line.LineColor = ScottPlot.Colors.White;
             //}
             ////plot.Axes.DateTimeTicksBottom();
-            //formsPlot.Refresh();
+            //
         }
 
-        private async void RenderLineByNormal()
+        private async void RenderLineByNormal(LineInfo lineInfo)
         {
             var dateTimes = new List<DateTime>();
             var yValues = new List<double>();
@@ -902,7 +971,7 @@ namespace LineControl
                 var flux = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
                     "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")";
+                    $"|> filter(fn: (r) => r[\"name\"] == \"{lineInfo.Name}\")";
 
                 var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(flux, orgID);
 
@@ -920,14 +989,10 @@ namespace LineControl
                 });
             }
 
-            plot.Clear();
-            var line = plot.Add.ScatterLine(dateTimes.ToArray(), yValues.ToArray());
-            line.Color = ScottPlot.Colors.Green;
+            var line = plot.Add.Scatter(dateTimes.ToArray(), yValues.ToArray());
+            line.Color = ScottPlot.Color.FromColor(lineInfo.LineColor);
             line.LinePattern = LinePattern.Solid;
-
-            plot.Axes.DateTimeTicksBottom();
-            plot.Axes.Right.MinimumSize = 50;
-            formsPlot.Refresh();
+            line.LineWidth = lineInfo.LineWidth;
         }
 
         #endregion

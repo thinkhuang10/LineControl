@@ -68,20 +68,18 @@
             this.DeleteLineButton = new System.Windows.Forms.Button();
             this.AddLineButton = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.YAxisMax = new System.Windows.Forms.TextBox();
-            this.YAxisMin = new System.Windows.Forms.TextBox();
+            this.LineColor = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.tbLineWidth = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.tbLineDescription = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tbUpperLimitValue = new System.Windows.Forms.TextBox();
+            this.tbLowerLimitValue = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
             this.ExitButton = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -505,6 +503,7 @@
             this.listBoxVar.Name = "listBoxVar";
             this.listBoxVar.Size = new System.Drawing.Size(347, 524);
             this.listBoxVar.TabIndex = 4;
+            this.listBoxVar.SelectedIndexChanged += new System.EventHandler(this.listBoxVar_SelectedIndexChanged);
             // 
             // DeleteLineButton
             // 
@@ -530,16 +529,14 @@
             // 
             // groupBox6
             // 
-            this.groupBox6.Controls.Add(this.label20);
+            this.groupBox6.Controls.Add(this.LineColor);
             this.groupBox6.Controls.Add(this.label19);
-            this.groupBox6.Controls.Add(this.textBox3);
+            this.groupBox6.Controls.Add(this.tbLineWidth);
             this.groupBox6.Controls.Add(this.label16);
-            this.groupBox6.Controls.Add(this.textBox2);
+            this.groupBox6.Controls.Add(this.tbLineDescription);
             this.groupBox6.Controls.Add(this.label6);
-            this.groupBox6.Controls.Add(this.textBox1);
-            this.groupBox6.Controls.Add(this.label5);
-            this.groupBox6.Controls.Add(this.YAxisMax);
-            this.groupBox6.Controls.Add(this.YAxisMin);
+            this.groupBox6.Controls.Add(this.tbUpperLimitValue);
+            this.groupBox6.Controls.Add(this.tbLowerLimitValue);
             this.groupBox6.Controls.Add(this.label18);
             this.groupBox6.Controls.Add(this.label17);
             this.groupBox6.Location = new System.Drawing.Point(385, 10);
@@ -551,21 +548,79 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "范围";
             // 
-            // YAxisMax
+            // LineColor
             // 
-            this.YAxisMax.Location = new System.Drawing.Point(111, 80);
-            this.YAxisMax.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.YAxisMax.Name = "YAxisMax";
-            this.YAxisMax.Size = new System.Drawing.Size(145, 26);
-            this.YAxisMax.TabIndex = 1;
+            this.LineColor.BackColor = System.Drawing.Color.Gray;
+            this.LineColor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.LineColor.Location = new System.Drawing.Point(114, 133);
+            this.LineColor.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.LineColor.Name = "LineColor";
+            this.LineColor.Size = new System.Drawing.Size(84, 33);
+            this.LineColor.TabIndex = 9;
+            this.LineColor.Text = "     ";
+            this.LineColor.Click += new System.EventHandler(this.LineColor_Click);
             // 
-            // YAxisMin
+            // label19
             // 
-            this.YAxisMin.Location = new System.Drawing.Point(111, 38);
-            this.YAxisMin.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.YAxisMin.Name = "YAxisMin";
-            this.YAxisMin.Size = new System.Drawing.Size(145, 26);
-            this.YAxisMin.TabIndex = 1;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(31, 134);
+            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(73, 20);
+            this.label19.TabIndex = 8;
+            this.label19.Text = "线条颜色";
+            // 
+            // tbLineWidth
+            // 
+            this.tbLineWidth.Location = new System.Drawing.Point(108, 185);
+            this.tbLineWidth.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tbLineWidth.Name = "tbLineWidth";
+            this.tbLineWidth.Size = new System.Drawing.Size(145, 26);
+            this.tbLineWidth.TabIndex = 7;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(28, 188);
+            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(73, 20);
+            this.label16.TabIndex = 6;
+            this.label16.Text = "线条宽度";
+            // 
+            // tbLineDescription
+            // 
+            this.tbLineDescription.Location = new System.Drawing.Point(108, 240);
+            this.tbLineDescription.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tbLineDescription.Name = "tbLineDescription";
+            this.tbLineDescription.Size = new System.Drawing.Size(145, 26);
+            this.tbLineDescription.TabIndex = 5;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(28, 243);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(41, 20);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "描述";
+            // 
+            // tbUpperLimitValue
+            // 
+            this.tbUpperLimitValue.Location = new System.Drawing.Point(111, 80);
+            this.tbUpperLimitValue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tbUpperLimitValue.Name = "tbUpperLimitValue";
+            this.tbUpperLimitValue.Size = new System.Drawing.Size(145, 26);
+            this.tbUpperLimitValue.TabIndex = 1;
+            // 
+            // tbLowerLimitValue
+            // 
+            this.tbLowerLimitValue.Location = new System.Drawing.Point(111, 38);
+            this.tbLowerLimitValue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tbLowerLimitValue.Name = "tbLowerLimitValue";
+            this.tbLowerLimitValue.Size = new System.Drawing.Size(145, 26);
+            this.tbLowerLimitValue.TabIndex = 1;
             // 
             // label18
             // 
@@ -573,7 +628,7 @@
             this.label18.Location = new System.Drawing.Point(31, 87);
             this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(110, 30);
+            this.label18.Size = new System.Drawing.Size(73, 20);
             this.label18.TabIndex = 0;
             this.label18.Text = "量程上限";
             // 
@@ -583,7 +638,7 @@
             this.label17.Location = new System.Drawing.Point(31, 41);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(110, 30);
+            this.label17.Size = new System.Drawing.Size(73, 20);
             this.label17.TabIndex = 0;
             this.label17.Text = "量程下限";
             // 
@@ -608,81 +663,6 @@
             this.ExitButton.Text = "取消";
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(28, 302);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(41, 20);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "单位";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(108, 299);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(145, 26);
-            this.textBox1.TabIndex = 3;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(108, 240);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(145, 26);
-            this.textBox2.TabIndex = 5;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(28, 243);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(41, 20);
-            this.label6.TabIndex = 4;
-            this.label6.Text = "描述";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(108, 185);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(145, 26);
-            this.textBox3.TabIndex = 7;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(28, 188);
-            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(73, 20);
-            this.label16.TabIndex = 6;
-            this.label16.Text = "线条宽度";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(28, 143);
-            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(73, 20);
-            this.label19.TabIndex = 8;
-            this.label19.Text = "线条颜色";
-            // 
-            // label20
-            // 
-            this.label20.BackColor = System.Drawing.Color.Gray;
-            this.label20.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label20.Location = new System.Drawing.Point(111, 142);
-            this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(84, 33);
-            this.label20.TabIndex = 9;
-            this.label20.Text = "     ";
             // 
             // SetForm
             // 
@@ -739,8 +719,8 @@
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox YAxisMax;
-        private System.Windows.Forms.TextBox YAxisMin;
+        private System.Windows.Forms.TextBox tbUpperLimitValue;
+        private System.Windows.Forms.TextBox tbLowerLimitValue;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Button AddLineButton;
         private System.Windows.Forms.Button DeleteLineButton;
@@ -761,13 +741,11 @@
         private System.Windows.Forms.TextBox XAxisTitleSize;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.ListBox listBoxVar;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox tbLineDescription;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox tbLineWidth;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label LineColor;
         private System.Windows.Forms.Label label19;
     }
 }

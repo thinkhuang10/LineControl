@@ -1,5 +1,6 @@
 ﻿using CommonSnappableTypes;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace LineControl
@@ -38,20 +39,29 @@ namespace LineControl
             YAxisTitle.Text = saveData.yAxisTitle;
             YAxisTitleForeColor.BackColor = saveData.yAxisTitleForeColor;
             YAxisTitleSize.Text = saveData.yAxisTitleSize.ToString();
+
+            // 初始化曲线
+            listBoxVar.Items.Clear();
+            listBoxVar.Items.AddRange(saveData.lineInfos.Keys.ToArray());
+
+            if (listBoxVar.Items.Count > 0)
+            {
+                listBoxVar.SelectedIndex = 0;
+            }
         }
 
         private void OKButton_Click(object sender, EventArgs e)
         {
             #region 验证输入
 
-            if (!uint.TryParse(HorizonalGridCount.Text.Trim(), out uint horizonalGridCount)
+            if (!int.TryParse(HorizonalGridCount.Text.Trim(), out int horizonalGridCount)
                 || 0 == horizonalGridCount)
             {
                 MessageBox.Show("请输入正确的水平网格数.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (!uint.TryParse(VerticalGridCount.Text.Trim(), out uint verticalGridCount)
+            if (!int.TryParse(VerticalGridCount.Text.Trim(), out int verticalGridCount)
                 || 0 == verticalGridCount)
             {
                 MessageBox.Show("请输入正确的垂直网格数.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -191,6 +201,30 @@ namespace LineControl
         }
 
         #endregion
+
+        private void listBoxVar_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var selectedValue = listBoxVar.SelectedItem.ToString();
+
+            if (!saveData.lineInfos.ContainsKey(selectedValue))
+                return;
+
+            var lineInfo = saveData.lineInfos[selectedValue];
+
+            tbLowerLimitValue.Text = lineInfo.LowerLimitValue.ToString();
+            tbUpperLimitValue.Text = lineInfo.UpperLimitValue.ToString();
+            LineColor.BackColor = lineInfo.LineColor;
+            tbLineWidth.Text = lineInfo.LineWidth.ToString();
+            tbLineDescription.Text = lineInfo.Description;
+        }
+
+        private void LineColor_Click(object sender, EventArgs e)
+        {
+            if (colorDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            LineColor.BackColor = colorDialog.Color;
+        }
 
     }
 }
