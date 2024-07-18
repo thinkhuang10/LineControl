@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Historian));
             this.FrameTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.panelChart = new System.Windows.Forms.Panel();
             this.panelQuery = new System.Windows.Forms.Panel();
@@ -49,7 +50,7 @@
             this.FrameTableLayoutPanel.Controls.Add(this.panelQuery, 0, 1);
             this.FrameTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FrameTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
-            this.FrameTableLayoutPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.FrameTableLayoutPanel.Margin = new System.Windows.Forms.Padding(2);
             this.FrameTableLayoutPanel.Name = "FrameTableLayoutPanel";
             this.FrameTableLayoutPanel.RowCount = 2;
             this.FrameTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 93.22222F));
@@ -83,50 +84,58 @@
             // 
             // btPrintPreview
             // 
-            this.btPrintPreview.Location = new System.Drawing.Point(623, 8);
+            this.btPrintPreview.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btPrintPreview.BackgroundImage")));
+            this.btPrintPreview.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btPrintPreview.Location = new System.Drawing.Point(540, 8);
             this.btPrintPreview.Name = "btPrintPreview";
-            this.btPrintPreview.Size = new System.Drawing.Size(65, 23);
+            this.btPrintPreview.Size = new System.Drawing.Size(23, 23);
             this.btPrintPreview.TabIndex = 5;
-            this.btPrintPreview.Text = "打印预览";
             this.btPrintPreview.UseVisualStyleBackColor = true;
             this.btPrintPreview.Click += new System.EventHandler(this.btPrintPreview_Click);
+            this.btPrintPreview.MouseEnter += new System.EventHandler(this.btPrintPreview_MouseEnter);
             // 
             // btExport
             // 
-            this.btExport.Location = new System.Drawing.Point(546, 8);
+            this.btExport.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btExport.BackgroundImage")));
+            this.btExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btExport.Location = new System.Drawing.Point(511, 8);
             this.btExport.Name = "btExport";
-            this.btExport.Size = new System.Drawing.Size(52, 23);
+            this.btExport.Size = new System.Drawing.Size(23, 23);
             this.btExport.TabIndex = 4;
-            this.btExport.Text = "导出";
             this.btExport.UseVisualStyleBackColor = true;
             this.btExport.Click += new System.EventHandler(this.btExport_Click);
+            this.btExport.MouseEnter += new System.EventHandler(this.btExport_MouseEnter);
             // 
             // btPrint
             // 
-            this.btPrint.Location = new System.Drawing.Point(693, 8);
+            this.btPrint.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btPrint.BackgroundImage")));
+            this.btPrint.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btPrint.Location = new System.Drawing.Point(569, 8);
             this.btPrint.Name = "btPrint";
-            this.btPrint.Size = new System.Drawing.Size(37, 23);
+            this.btPrint.Size = new System.Drawing.Size(23, 23);
             this.btPrint.TabIndex = 3;
-            this.btPrint.Text = "打印";
             this.btPrint.UseVisualStyleBackColor = true;
             this.btPrint.Click += new System.EventHandler(this.btPrint_Click);
+            this.btPrint.MouseEnter += new System.EventHandler(this.btPrint_MouseEnter);
             // 
             // btQuery
             // 
-            this.btQuery.Location = new System.Drawing.Point(456, 8);
+            this.btQuery.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btQuery.BackgroundImage")));
+            this.btQuery.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btQuery.Location = new System.Drawing.Point(451, 8);
             this.btQuery.Name = "btQuery";
-            this.btQuery.Size = new System.Drawing.Size(75, 23);
+            this.btQuery.Size = new System.Drawing.Size(23, 23);
             this.btQuery.TabIndex = 2;
-            this.btQuery.Text = "查询";
             this.btQuery.UseVisualStyleBackColor = true;
             this.btQuery.Click += new System.EventHandler(this.btQuery_Click);
+            this.btQuery.MouseEnter += new System.EventHandler(this.btQuery_MouseEnter);
             // 
             // endDtp
             // 
             this.endDtp.CustomFormat = "yyyy-MM-dd HH:mm:ss";
             this.endDtp.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.endDtp.Location = new System.Drawing.Point(237, 10);
-            this.endDtp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.endDtp.Margin = new System.Windows.Forms.Padding(2);
             this.endDtp.Name = "endDtp";
             this.endDtp.Size = new System.Drawing.Size(209, 21);
             this.endDtp.TabIndex = 1;
@@ -136,7 +145,7 @@
             this.startDtp.CustomFormat = "yyyy-MM-dd HH:mm:ss";
             this.startDtp.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.startDtp.Location = new System.Drawing.Point(15, 10);
-            this.startDtp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.startDtp.Margin = new System.Windows.Forms.Padding(2);
             this.startDtp.Name = "startDtp";
             this.startDtp.Size = new System.Drawing.Size(209, 21);
             this.startDtp.TabIndex = 0;
@@ -146,7 +155,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.FrameTableLayoutPanel);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Historian";
             this.Size = new System.Drawing.Size(800, 540);
             this.Load += new System.EventHandler(this.UserControl_Load);

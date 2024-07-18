@@ -54,14 +54,14 @@ namespace LineControl
 
         public static System.Drawing.Image GetLogoStatic()
         {
-            ResourceManager resourceManager = new ResourceManager(typeof(Resource));
-            return (Bitmap)resourceManager.GetObject("XY");
+            ResourceManager resourceManager = new ResourceManager(typeof(Resources));
+            return (Bitmap)resourceManager.GetObject("historian");
         }
 
         public Bitmap GetLogo()
         {
-            var resourceManager = new ResourceManager(typeof(Resource));
-            return (Bitmap)resourceManager.GetObject("XY");
+            var resourceManager = new ResourceManager(typeof(Resources));
+            return (Bitmap)resourceManager.GetObject("historian");
         }
 
         public byte[] Serialize()
@@ -1057,5 +1057,32 @@ namespace LineControl
 
         #endregion
 
+        private void btQuery_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btQuery, "查询");
+        }
+
+        private void btExport_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btExport, "导出图片");
+        }
+
+        private void btPrintPreview_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btExport, "打印预览");
+        }
+
+        private void btPrint_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btPrint, "打印");
+        }
     }
 }
