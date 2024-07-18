@@ -620,14 +620,14 @@ namespace LineControl
             #endregion
 
             SetPlotTitle();
-            SetXAxisTitle();
-            SetYAxisTitle();
 
+            // 注意函数顺序不能乱，渲染图形不正确
             SetPlotBackground();
             SetPlotGridColor();
             SetXAxisTick();
-
             SetYAxisTick();
+            SetXAxisTitle();
+            SetYAxisTitle();
             SetTickStyle();
 
             RefreshPlot();
@@ -797,14 +797,14 @@ namespace LineControl
                 return;
 
             SetPlotTitle();
-            SetXAxisTitle();
-            SetYAxisTitle();
 
+            // 注意函数顺序不能乱，渲染图形不正确
             SetPlotBackground();
             SetPlotGridColor();
-
             SetXAxisTick();
             SetYAxisTick();
+            SetXAxisTitle();
+            SetYAxisTitle();
             SetTickStyle();
 
             RefreshPlot();
