@@ -40,6 +40,9 @@ namespace LineControl
             YAxisTitleForeColor.BackColor = saveData.yAxisTitleForeColor;
             YAxisTitleSize.Text = saveData.yAxisTitleSize.ToString();
 
+            checkBoxLegend.Checked = saveData.isShowLegend;
+            comboBoxLegend.SelectedItem = saveData.legendPosition;
+
             // 初始化曲线
             listBoxVar.Items.Clear();
             listBoxVar.Items.AddRange(saveData.lineInfos.Keys.ToArray());
@@ -50,7 +53,7 @@ namespace LineControl
             }
         }
 
-        private void OKButton_Click(object sender, EventArgs e)
+        private void btOK_Click(object sender, EventArgs e)
         {
             #region 验证输入
 
@@ -113,6 +116,9 @@ namespace LineControl
             saveData.yAxisTitleForeColor = YAxisTitleForeColor.BackColor;
             saveData.yAxisTitleSize = yAxisTitleSize;
 
+            saveData.isShowLegend = checkBoxLegend.Checked;
+            saveData.legendPosition = comboBoxLegend.SelectedItem.ToString();
+
             //saveData.lineInfos.Clear();
 
             #endregion
@@ -120,7 +126,7 @@ namespace LineControl
             DialogResult = DialogResult.OK;
         }
 
-        private void ExitButton_Click(object sender, EventArgs e)
+        private void btCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
         }
@@ -189,7 +195,17 @@ namespace LineControl
 
         private void AddLineButton_Click(object sender, EventArgs e)
         {
+            //TODO: 获取变量的值
+            var tagName = "TagTest";
 
+            if (saveData.lineInfos.Keys.Contains(tagName))
+                return;
+
+            saveData.lineInfos.Add(tagName, new LineInfo());
+
+            listBoxVar.ClearSelected();
+            var index = listBoxVar.Items.Add(tagName);
+            listBoxVar.SelectedIndex = index;
         }
 
         private void DeleteLineButton_Click(object sender, EventArgs e)
@@ -198,24 +214,42 @@ namespace LineControl
             if (dr != DialogResult.OK)
                 return;
 
+            foreach (string tagName in listBoxVar.SelectedItems)
+            {
+                if (!saveData.lineInfos.ContainsKey(tagName))
+                    continue;
+
+                saveData.lineInfos.Remove(tagName);
+            }
+
+            for (var i = listBoxVar.Items.Count - 1; i >= 0; i--)
+            {
+                listBoxVar.Items.Remove(listBoxVar.SelectedItem);
+            }
         }
 
         #endregion
 
         private void listBoxVar_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var selectedValue = listBoxVar.SelectedItem.ToString();
-
-            if (!saveData.lineInfos.ContainsKey(selectedValue))
+            if (null == listBoxVar.SelectedItem)
                 return;
 
-            var lineInfo = saveData.lineInfos[selectedValue];
+            var tagName = listBoxVar.SelectedItem.ToString();
+
+            if (!saveData.lineInfos.ContainsKey(tagName))
+                return;
+
+            var lineInfo = saveData.lineInfos[tagName];
 
             tbLowerLimitValue.Text = lineInfo.LowerLimitValue.ToString();
             tbUpperLimitValue.Text = lineInfo.UpperLimitValue.ToString();
             LineColor.BackColor = lineInfo.LineColor;
             tbLineWidth.Text = lineInfo.LineWidth.ToString();
             tbLineDescription.Text = lineInfo.Description;
+
+            // 隐藏修改成功的Tooltip
+            lbModifyLineTooltip.Visible = false;
         }
 
         private void LineColor_Click(object sender, EventArgs e)
@@ -226,5 +260,49 @@ namespace LineControl
             LineColor.BackColor = colorDialog.Color;
         }
 
+        private void btModifyLine_Click(object sender, EventArgs e)
+        {
+            lbModifyLineTooltip.Visible= false;
+
+            if (null == listBoxVar.SelectedItem)
+                return;
+
+            var tagName = listBoxVar.SelectedItem.ToString();
+            if (!saveData.lineInfos.ContainsKey(tagName))
+                return;
+
+            if (!double.TryParse(tbLowerLimitValue.Text, out var lowerLimitValue))
+            {
+                MessageBox.Show("请输入正确的量程下限.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!double.TryParse(tbUpperLimitValue.Text, out var upperLimitValue))
+            {
+                MessageBox.Show("请输入正确的量程上限.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!int.TryParse(tbLineWidth.Text, out var lineWidth) || lineWidth <= 0) 
+            {
+                MessageBox.Show("请输入正确的曲线宽度.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (lowerLimitValue > upperLimitValue)
+            {
+                MessageBox.Show("量程上限应该大于量程下限.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var lineInfo = saveData.lineInfos[tagName];
+            saveData.lineInfos[tagName].LowerLimitValue = lowerLimitValue;
+            saveData.lineInfos[tagName].UpperLimitValue = upperLimitValue;
+            saveData.lineInfos[tagName].LineColor = LineColor.BackColor;
+            saveData.lineInfos[tagName].LineWidth = lineWidth;
+            saveData.lineInfos[tagName].Description = tbLineDescription.Text;
+
+            lbModifyLineTooltip.Visible = true;
+        }
     }
 }

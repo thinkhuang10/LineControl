@@ -30,6 +30,10 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.comboBoxLegend = new System.Windows.Forms.ComboBox();
+            this.checkBoxLegend = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.YAxisTitleForeColor = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
@@ -68,6 +72,7 @@
             this.DeleteLineButton = new System.Windows.Forms.Button();
             this.AddLineButton = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.btModifyLine = new System.Windows.Forms.Button();
             this.LineColor = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.tbLineWidth = new System.Windows.Forms.TextBox();
@@ -78,10 +83,12 @@
             this.tbLowerLimitValue = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.OKButton = new System.Windows.Forms.Button();
-            this.ExitButton = new System.Windows.Forms.Button();
+            this.btOK = new System.Windows.Forms.Button();
+            this.btCancel = new System.Windows.Forms.Button();
+            this.lbModifyLineTooltip = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -102,6 +109,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.groupBox3);
             this.tabPage1.Controls.Add(this.groupBox4);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
@@ -114,6 +122,52 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "常规";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.comboBoxLegend);
+            this.groupBox3.Controls.Add(this.checkBoxLegend);
+            this.groupBox3.Controls.Add(this.label5);
+            this.groupBox3.Location = new System.Drawing.Point(4, 458);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox3.Size = new System.Drawing.Size(746, 93);
+            this.groupBox3.TabIndex = 2;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "曲线标注";
+            // 
+            // comboBoxLegend
+            // 
+            this.comboBoxLegend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxLegend.FormattingEnabled = true;
+            this.comboBoxLegend.Items.AddRange(new object[] {
+            "上方",
+            "右侧"});
+            this.comboBoxLegend.Location = new System.Drawing.Point(270, 38);
+            this.comboBoxLegend.Name = "comboBoxLegend";
+            this.comboBoxLegend.Size = new System.Drawing.Size(128, 26);
+            this.comboBoxLegend.TabIndex = 3;
+            // 
+            // checkBoxLegend
+            // 
+            this.checkBoxLegend.AutoSize = true;
+            this.checkBoxLegend.Location = new System.Drawing.Point(30, 42);
+            this.checkBoxLegend.Name = "checkBoxLegend";
+            this.checkBoxLegend.Size = new System.Drawing.Size(106, 22);
+            this.checkBoxLegend.TabIndex = 2;
+            this.checkBoxLegend.Text = "显示标注";
+            this.checkBoxLegend.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(183, 43);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 18);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "标注位置";
             // 
             // groupBox4
             // 
@@ -358,9 +412,9 @@
             this.label7.Location = new System.Drawing.Point(390, 45);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(80, 18);
+            this.label7.Size = new System.Drawing.Size(116, 18);
             this.label7.TabIndex = 0;
-            this.label7.Text = "垂直网格";
+            this.label7.Text = "目标垂直网格";
             // 
             // label8
             // 
@@ -368,9 +422,9 @@
             this.label8.Location = new System.Drawing.Point(40, 45);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(80, 18);
+            this.label8.Size = new System.Drawing.Size(116, 18);
             this.label8.TabIndex = 0;
-            this.label8.Text = "水平网格";
+            this.label8.Text = "目标水平网格";
             // 
             // groupBox1
             // 
@@ -395,7 +449,7 @@
             // 
             this.AxisLabelColor.BackColor = System.Drawing.Color.Gray;
             this.AxisLabelColor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.AxisLabelColor.Location = new System.Drawing.Point(604, 45);
+            this.AxisLabelColor.Location = new System.Drawing.Point(615, 45);
             this.AxisLabelColor.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.AxisLabelColor.Name = "AxisLabelColor";
             this.AxisLabelColor.Size = new System.Drawing.Size(84, 33);
@@ -446,9 +500,9 @@
             this.label4.Location = new System.Drawing.Point(552, 52);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 18);
+            this.label4.Size = new System.Drawing.Size(62, 18);
             this.label4.TabIndex = 0;
-            this.label4.Text = "标注";
+            this.label4.Text = "轴标记";
             // 
             // label2
             // 
@@ -501,13 +555,14 @@
             this.listBoxVar.ItemHeight = 20;
             this.listBoxVar.Location = new System.Drawing.Point(18, 21);
             this.listBoxVar.Name = "listBoxVar";
+            this.listBoxVar.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.listBoxVar.Size = new System.Drawing.Size(347, 524);
             this.listBoxVar.TabIndex = 4;
             this.listBoxVar.SelectedIndexChanged += new System.EventHandler(this.listBoxVar_SelectedIndexChanged);
             // 
             // DeleteLineButton
             // 
-            this.DeleteLineButton.Location = new System.Drawing.Point(588, 584);
+            this.DeleteLineButton.Location = new System.Drawing.Point(196, 553);
             this.DeleteLineButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.DeleteLineButton.Name = "DeleteLineButton";
             this.DeleteLineButton.Size = new System.Drawing.Size(160, 38);
@@ -518,7 +573,7 @@
             // 
             // AddLineButton
             // 
-            this.AddLineButton.Location = new System.Drawing.Point(420, 584);
+            this.AddLineButton.Location = new System.Drawing.Point(28, 553);
             this.AddLineButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.AddLineButton.Name = "AddLineButton";
             this.AddLineButton.Size = new System.Drawing.Size(160, 38);
@@ -529,6 +584,8 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.lbModifyLineTooltip);
+            this.groupBox6.Controls.Add(this.btModifyLine);
             this.groupBox6.Controls.Add(this.LineColor);
             this.groupBox6.Controls.Add(this.label19);
             this.groupBox6.Controls.Add(this.tbLineWidth);
@@ -547,6 +604,17 @@
             this.groupBox6.TabIndex = 1;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "范围";
+            // 
+            // btModifyLine
+            // 
+            this.btModifyLine.Location = new System.Drawing.Point(81, 291);
+            this.btModifyLine.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btModifyLine.Name = "btModifyLine";
+            this.btModifyLine.Size = new System.Drawing.Size(160, 38);
+            this.btModifyLine.TabIndex = 5;
+            this.btModifyLine.Text = "修改";
+            this.btModifyLine.UseVisualStyleBackColor = true;
+            this.btModifyLine.Click += new System.EventHandler(this.btModifyLine_Click);
             // 
             // LineColor
             // 
@@ -642,35 +710,45 @@
             this.label17.TabIndex = 0;
             this.label17.Text = "量程下限";
             // 
-            // OKButton
+            // btOK
             // 
-            this.OKButton.Location = new System.Drawing.Point(506, 867);
-            this.OKButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.OKButton.Name = "OKButton";
-            this.OKButton.Size = new System.Drawing.Size(112, 38);
-            this.OKButton.TabIndex = 1;
-            this.OKButton.Text = "确定";
-            this.OKButton.UseVisualStyleBackColor = true;
-            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
+            this.btOK.Location = new System.Drawing.Point(506, 867);
+            this.btOK.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btOK.Name = "btOK";
+            this.btOK.Size = new System.Drawing.Size(112, 38);
+            this.btOK.TabIndex = 1;
+            this.btOK.Text = "确定";
+            this.btOK.UseVisualStyleBackColor = true;
+            this.btOK.Click += new System.EventHandler(this.btOK_Click);
             // 
-            // ExitButton
+            // btCancel
             // 
-            this.ExitButton.Location = new System.Drawing.Point(640, 867);
-            this.ExitButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(112, 38);
-            this.ExitButton.TabIndex = 1;
-            this.ExitButton.Text = "取消";
-            this.ExitButton.UseVisualStyleBackColor = true;
-            this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            this.btCancel.Location = new System.Drawing.Point(640, 867);
+            this.btCancel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btCancel.Name = "btCancel";
+            this.btCancel.Size = new System.Drawing.Size(112, 38);
+            this.btCancel.TabIndex = 1;
+            this.btCancel.Text = "取消";
+            this.btCancel.UseVisualStyleBackColor = true;
+            this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
+            // 
+            // lbModifyLineTooltip
+            // 
+            this.lbModifyLineTooltip.AutoSize = true;
+            this.lbModifyLineTooltip.Location = new System.Drawing.Point(125, 343);
+            this.lbModifyLineTooltip.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbModifyLineTooltip.Name = "lbModifyLineTooltip";
+            this.lbModifyLineTooltip.Size = new System.Drawing.Size(77, 20);
+            this.lbModifyLineTooltip.TabIndex = 10;
+            this.lbModifyLineTooltip.Text = "修改成功.";
             // 
             // SetForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 925);
-            this.Controls.Add(this.ExitButton);
-            this.Controls.Add(this.OKButton);
+            this.Controls.Add(this.btCancel);
+            this.Controls.Add(this.btOK);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -680,6 +758,8 @@
             this.Load += new System.EventHandler(this.XYSetForm_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -715,8 +795,8 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.Button ExitButton;
+        private System.Windows.Forms.Button btOK;
+        private System.Windows.Forms.Button btCancel;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox tbUpperLimitValue;
@@ -747,5 +827,11 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label LineColor;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox checkBoxLegend;
+        private System.Windows.Forms.ComboBox comboBoxLegend;
+        private System.Windows.Forms.Button btModifyLine;
+        private System.Windows.Forms.Label lbModifyLineTooltip;
     }
 }

@@ -2,7 +2,7 @@
 using InfluxDB.Client;
 using LineControl.Properties;
 using ScottPlot;
-using ScottPlot.Control;
+using ScottPlot.Panels;
 using ScottPlot.TickGenerators;
 using ScottPlot.TickGenerators.TimeUnits;
 using ScottPlot.WinForms;
@@ -585,7 +585,7 @@ namespace LineControl
 
             //formsPlot.Plot.Axes.DateTimeTicksBottom();
 
-            //// 测试2
+            // 测试2
             //var count = 1000;
             //var minValues = new float[count];
             //var maxValues = new float[count];
@@ -629,6 +629,7 @@ namespace LineControl
             SetXAxisTitle();
             SetYAxisTitle();
             SetTickStyle();
+            SetLegend();
 
             RefreshPlot();
         }
@@ -639,9 +640,8 @@ namespace LineControl
             panelChart.Controls.Add(formsPlot);
 
             // 屏蔽ScottPlot自带的双击显示
-            PlotActions customActions = PlotActions.Standard();
-            customActions.ToggleBenchmark = delegate { };
-            formsPlot.Interaction.Enable(customActions);
+            // 同时屏蔽掉放大,缩小，左右移动等操作
+            formsPlot.Interaction.Disable();
 
             formsPlot.DoubleClick += chart_DoubleClick;
         }
@@ -713,23 +713,44 @@ namespace LineControl
         /// </summary>
         private void SetXAxisTick()
         {
-            // 严格分割网格
-            var dateDoubles = new DateTime[saveData.verticalGridCount];
-            double[] valueDoubles = new double[saveData.verticalGridCount];
+            //// 严格分割网格
+            //var dateDoubles = new DateTime[saveData.verticalGridCount];
+            //double[] valueDoubles = new double[saveData.verticalGridCount];
+            //var startTime = startDtp.Value;
+            //var endTime = endDtp.Value;
+            //var timeGap = endTime.Subtract(startTime).TotalSeconds / saveData.verticalGridCount;
+            //for (int i = 0; i < saveData.verticalGridCount; i++)
+            //{
+            //    dateDoubles[i] = startTime + TimeSpan.FromSeconds(i * timeGap);
+            //    valueDoubles[i] = 0;
+            //}
+            //var line = plot.Add.Scatter(dateDoubles, valueDoubles);
+            //line.Color = Colors.Transparent;    // 曲线设置为看不见
+
+            //plot.Axes.SetLimitsX(startTime.ToOADate(), endTime.ToOADate());
+            //var dtx = plot.Axes.DateTimeTicksBottom();
+            //dtx.TickGenerator = new DateTimeFixedInterval(new Second(), (int)timeGap);
+
+            // 自动化分割网格
             var startTime = startDtp.Value;
             var endTime = endDtp.Value;
-            var timeGap = endTime.Subtract(startTime).TotalSeconds / saveData.verticalGridCount;
-            for (int i = 0; i < saveData.verticalGridCount; i++)
-            {
-                dateDoubles[i] = startTime + TimeSpan.FromSeconds(i * timeGap);
-                valueDoubles[i] = 0;
-            }
-            var line = plot.Add.Scatter(dateDoubles, valueDoubles);
-            line.Color = Colors.Transparent;    // 曲线设置为看不见
-
-            plot.Axes.SetLimitsX(startTime.ToOADate(), endTime.ToOADate());
+            
             var dtx = plot.Axes.DateTimeTicksBottom();
+            var timeGap = endTime.Subtract(startTime).TotalSeconds / saveData.verticalGridCount;
             dtx.TickGenerator = new DateTimeFixedInterval(new Second(), (int)timeGap);
+            plot.Axes.SetLimitsX(startTime.ToOADate(), endTime.ToOADate());
+
+            // 设置日期的格式
+            plot.RenderManager.RenderStarting += (s, e) =>
+            {
+                Tick[] ticks = plot.Axes.Bottom.TickGenerator.Ticks;
+                for (int i = 0; i < ticks.Length; i++)
+                {
+                    var dt = DateTime.FromOADate(ticks[i].Position);
+                    var label = $"{dt:yyyy-MM-dd}" + Environment.NewLine + $" {dt:  HH:mm:ss}";
+                    ticks[i] = new Tick(ticks[i].Position, label);
+                }
+            };
         }
 
         /// <summary>
@@ -738,7 +759,7 @@ namespace LineControl
         /// </summary>
         private void SetYAxisTick()
         {
-            // 严格分割网格
+            //// 严格分割网格
             //if (saveData.lineInfos.Count == 0)
             //{
             //    plot.Axes.Left.TickGenerator = new NumericFixedInterval(100 / saveData.horizonalGridCount);
@@ -748,7 +769,6 @@ namespace LineControl
             //{
             //    var max = saveData.lineInfos.Values.Max(x => x.UpperLimitValue);
             //    var min = saveData.lineInfos.Values.Min(x => x.LowerLimitValue);
-
             //    var interval = (int)((max - min) / saveData.horizonalGridCount);
             //    plot.Axes.Left.TickGenerator = new NumericFixedInterval(interval);
             //    plot.Axes.SetLimitsY(min, max);
@@ -786,11 +806,47 @@ namespace LineControl
             plot.Axes.Left.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(saveData.axisLabelColor);
         }
 
+        private LegendPanel rightLegend;
+
+        private void SetLegend()
+        {
+            plot.HideLegend();
+            if (!saveData.isShowLegend)
+            {
+                plot.HideLegend();
+                return;
+            }
+
+            var legendItems = new List<LegendItem>();
+            foreach (var lineName in saveData.lineInfos.Keys)
+            { 
+                var lineInfo = saveData.lineInfos[lineName];
+                var item = new LegendItem()
+                {
+                    LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor),
+                    MarkerFillColor = ScottPlot.Color.FromColor(lineInfo.LineColor),
+                    MarkerLineColor = ScottPlot.Color.FromColor(lineInfo.LineColor),
+                    LineWidth = lineInfo.LineWidth,
+                    LabelText = lineName
+                };
+                legendItems.Add(item);
+            }
+
+            var panel = plot.ShowLegend(legendItems);
+            if (saveData.legendPosition == "上方")
+            {
+                panel.Alignment = Alignment.UpperCenter;
+                panel.Orientation = ScottPlot.Orientation.Horizontal;
+            }
+            else 
+            {
+                panel.Alignment = Alignment.LowerRight;
+                panel.Orientation = ScottPlot.Orientation.Vertical;
+            }
+        }
+
         private void chart_DoubleClick(object sender, EventArgs e)
         {
-            if (isRuning)
-                return;
-
             var form = new SetForm(saveData);
             form.GetVarTableEvent += GetVarTableEvent;
             if (DialogResult.OK != form.ShowDialog())
@@ -806,6 +862,7 @@ namespace LineControl
             SetXAxisTitle();
             SetYAxisTitle();
             SetTickStyle();
+            SetLegend();
 
             RefreshPlot();
         }
@@ -822,25 +879,76 @@ namespace LineControl
 
         private async void btQuery_Click(object sender, EventArgs e)
         {
-            if (!isRuning)
-                return;
+            ShowTestLine();
 
-            if (startDtp.Value > endDtp.Value)
+            // 实际查询曲线
+            //if (!isRuning)
+            //    return;
+
+            //if (startDtp.Value > endDtp.Value)
+            //{
+            //    MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
+
+            //if (saveData.lineInfos.Count == 0)
+            //    return;
+
+            //foreach (var tagName in saveData.lineInfos.Keys)
+            //{ 
+            //    var lineInfo = saveData.lineInfos[tagName];
+            //    var linePointCount = await GetLinePointCount(tagName);
+
+            //    RenderLines(lineInfo, linePointCount);
+            //}
+        }
+
+        private void ShowTestLine()
+        {
+            plot.Clear();
+
+            var count = 1000;
+            var minValues = new float[count];
+            var maxValues = new float[count];
+            var val = 0.0f;
+            for (var i = 0; i < count; i++)
             {
-                MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                minValues[i] = val;
+                maxValues[i] = val + 1;
+                val++;
+
+                if (val > 100)
+                {
+                    val = 0;
+                }
             }
 
-            if (saveData.lineInfos.Count == 0)
-                return;
+            for (int i = 0; i < count; i++)
+            {
+                var time = startDtp.Value + TimeSpan.FromSeconds(i);
+                var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
+                line.LineColor = ScottPlot.Colors.Red;
 
-            foreach (var tagName in saveData.lineInfos.Keys)
-            { 
-                var lineInfo = saveData.lineInfos[tagName];
-                var linePointCount = await GetLinePointCount(tagName);
-
-                RenderLines(lineInfo, linePointCount);
+                if (i != count - 1)
+                {
+                    var timeMinAndMax = time + TimeSpan.FromSeconds(1);
+                    var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
+                    lineMinAndMax.LineColor = ScottPlot.Colors.Red;
+                }
             }
+
+            SetPlotBackground();
+            SetPlotGridColor();
+
+            SetXAxisTick();
+            SetYAxisTick();
+            SetXAxisTitle();
+            SetYAxisTitle();
+
+            SetTickStyle();
+            SetLegend();
+
+            RefreshPlot();
         }
 
         private void RenderLines(LineInfo lineInfo,int linePointCount)
@@ -997,6 +1105,55 @@ namespace LineControl
 
         #endregion
 
+        #region 放大缩小
+
+        private void btReset_Click(object sender, EventArgs e)
+        {
+            btQuery_Click(null, null);
+        }
+
+        private void btZoomIn_Click(object sender, EventArgs e)
+        {
+            plot.Axes.ZoomIn(2, 2);
+            formsPlot.Refresh();
+        }
+
+        private void btZoomOut_Click(object sender, EventArgs e)
+        {
+            plot.Axes.ZoomOut(2, 2);
+            formsPlot.Refresh();
+        }
+
+        private void btPanningLeft_Click(object sender, EventArgs e)
+        {
+            var offset = new CoordinateOffset(0.01, 0);
+            plot.Axes.Pan(offset);
+            formsPlot.Refresh();
+        }
+
+        private void btPanningRight_Click(object sender, EventArgs e)
+        {
+            var offset = new CoordinateOffset(-0.01, 0);
+            plot.Axes.Pan(offset);
+            formsPlot.Refresh();
+        }
+
+        private void btPanningUp_Click(object sender, EventArgs e)
+        {
+            var offset = new CoordinateOffset(0, 10);
+            plot.Axes.Pan(offset);
+            formsPlot.Refresh();
+        }
+
+        private void btPanningDown_Click(object sender, EventArgs e)
+        {
+            var offset = new CoordinateOffset(0, -10);
+            plot.Axes.Pan(offset);
+            formsPlot.Refresh();
+        }
+
+        #endregion
+
         #region 导出
 
         private void btExport_Click(object sender, EventArgs e)
@@ -1057,6 +1214,8 @@ namespace LineControl
 
         #endregion
 
+        #region 按钮提示
+
         private void btQuery_MouseEnter(object sender, EventArgs e)
         {
             var toolTip = new ToolTip();
@@ -1084,5 +1243,57 @@ namespace LineControl
             toolTip.ShowAlways = true;
             toolTip.SetToolTip(btPrint, "打印");
         }
+
+        private void btReset_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btPrint, "重置");
+        }
+
+        private void btZoomIn_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btPrint, "放大");
+        }
+
+        private void btZoomOut_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btPrint, "缩小");
+        }
+
+        private void btPanningLeft_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btPrint, "左移");
+        }
+
+        private void btPanningRight_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btPrint, "右移");
+        }
+
+        private void btPanningUp_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btPrint, "上移");
+        }
+
+        private void btPanningDown_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btPrint, "下移");
+        }
+
+        #endregion
+
     }
 }

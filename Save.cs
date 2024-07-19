@@ -26,7 +26,7 @@ namespace LineControl
         public int horizonalGridCount = 5;
 
         // 设置标题
-        public string chartTitle = "历史曲线";
+        public string chartTitle = "";
 
         public Color chartTitleColor = Color.Black;
 
@@ -35,7 +35,7 @@ namespace LineControl
         public bool chartTitleIsBold = false;
 
         // 设置X轴
-        public string xAxisTitle = "X轴";
+        public string xAxisTitle = "";
 
         public Color xAxisTitleForeColor = Color.Black;
 
@@ -44,13 +44,18 @@ namespace LineControl
         public bool xAxisTitleIsBold = false;
 
         // 设置Y轴
-        public string yAxisTitle = "Y轴";
+        public string yAxisTitle = "";
 
         public Color yAxisTitleForeColor = Color.Black;
 
         public float yAxisTitleSize = 10.0f;
 
         public bool yAxisTitleIsBold = false;
+
+        // 设置标注
+        public bool isShowLegend = true;
+
+        public string legendPosition = "上方";
 
         // TODO：方便测试
         public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>() {

@@ -12,7 +12,7 @@ namespace LineControl
 
         public double UpperLimitValue { set; get; } = 100;
 
-        public Color LineColor { set; get; } = Color.White;
+        public Color LineColor { set; get; } = Color.Blue;
 
         public int LineWidth { get; set; } = 1;
 
