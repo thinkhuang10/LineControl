@@ -648,7 +648,10 @@ namespace LineControl
 
         private void InitDateTime()
         {
-            startDtp.Value = DateTime.Now - TimeSpan.FromHours(1);
+            // TODO：测试,获取两分钟的数据
+            startDtp.Value = DateTime.Now - TimeSpan.FromMinutes(2);
+
+            //startDtp.Value = DateTime.Now - TimeSpan.FromHours(1);
             endDtp.Value = DateTime.Now;
         }
 
@@ -879,28 +882,45 @@ namespace LineControl
 
         private async void btQuery_Click(object sender, EventArgs e)
         {
-            ShowTestLine();
+            // TODO: 用于测试的曲线
+            //ShowTestLine();
 
             // 实际查询曲线
-            //if (!isRuning)
-            //    return;
+            if (!isRuning)
+                return;
 
-            //if (startDtp.Value > endDtp.Value)
-            //{
-            //    MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    return;
-            //}
+            if (startDtp.Value > endDtp.Value)
+            {
+                MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-            //if (saveData.lineInfos.Count == 0)
-            //    return;
+            if (saveData.lineInfos.Count == 0)
+                return;
 
-            //foreach (var tagName in saveData.lineInfos.Keys)
-            //{ 
-            //    var lineInfo = saveData.lineInfos[tagName];
-            //    var linePointCount = await GetLinePointCount(tagName);
+            plot.Clear();
 
-            //    RenderLines(lineInfo, linePointCount);
-            //}
+            foreach (var tagName in saveData.lineInfos.Keys)
+            {
+                var lineInfo = saveData.lineInfos[tagName];
+                var linePointCount = await GetLinePointCount(tagName);
+
+                // 一定要等待曲线绘制完成
+                await RenderLines(lineInfo, linePointCount);
+            }
+
+            SetPlotBackground();
+            SetPlotGridColor();
+
+            SetXAxisTick();
+            SetYAxisTick();
+            SetXAxisTitle();
+            SetYAxisTitle();
+
+            SetTickStyle();
+            SetLegend();
+
+            RefreshPlot();
         }
 
         private void ShowTestLine()
@@ -951,23 +971,19 @@ namespace LineControl
             RefreshPlot();
         }
 
-        private void RenderLines(LineInfo lineInfo,int linePointCount)
+        private async Task RenderLines(LineInfo lineInfo,int linePointCount)
         {
-            plot.Clear();
-
             var plotWidth = formsPlot.Width;     // 获取控件的像素点数
             if (linePointCount > plotWidth)
             {
                 var totalSeconds = (endDtp.Value - startDtp.Value).TotalSeconds;
                 var gapSecond = ((int)totalSeconds) / plotWidth;
-                RenderLineByOptimize(lineInfo.Name, gapSecond);
+                await RenderLineByOptimize(lineInfo.Name, gapSecond);
             }
             else
             {
-                RenderLineByNormal(lineInfo);
+                await RenderLineByNormal(lineInfo);
             }
-
-            formsPlot.Refresh();
         }
 
         private async Task<int> GetLinePointCount(string tagName)
@@ -1000,7 +1016,7 @@ namespace LineControl
             return count;
         }
 
-        private async void RenderLineByOptimize(string tagName, double gapSecond)
+        private async Task RenderLineByOptimize(string tagName, double gapSecond)
         {
             var dateTimes = new List<DateTime>();
             var yMaxValues = new List<double>();
@@ -1066,7 +1082,7 @@ namespace LineControl
             //
         }
 
-        private async void RenderLineByNormal(LineInfo lineInfo)
+        private async Task RenderLineByNormal(LineInfo lineInfo)
         {
             var dateTimes = new List<DateTime>();
             var yValues = new List<double>();
@@ -1082,7 +1098,6 @@ namespace LineControl
                     $"|> filter(fn: (r) => r[\"name\"] == \"{lineInfo.Name}\")";
 
                 var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(flux, orgID);
-
                 fluxCountTable.ForEach(fluxTable =>
                 {
                     var fluxRecords = fluxTable.Records;
@@ -1097,9 +1112,8 @@ namespace LineControl
                 });
             }
 
-            var line = plot.Add.Scatter(dateTimes.ToArray(), yValues.ToArray());
+            var line = plot.Add.ScatterLine(dateTimes.ToArray(), yValues.ToArray());
             line.Color = ScottPlot.Color.FromColor(lineInfo.LineColor);
-            line.LinePattern = LinePattern.Solid;
             line.LineWidth = lineInfo.LineWidth;
         }
 

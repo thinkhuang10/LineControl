@@ -59,8 +59,8 @@ namespace LineControl
 
         // TODO：方便测试
         public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>() {
-            {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -200, UpperLimitValue = 100, LineColor = Color.Green, LineWidth =1} },
-            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -100, UpperLimitValue = 250, LineColor = Color.Red, LineWidth =2} }
+            {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Green, LineWidth =1} },
+            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Red, LineWidth =1} }
         };
     }
 }
