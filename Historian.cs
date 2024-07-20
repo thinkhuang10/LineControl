@@ -978,7 +978,7 @@ namespace LineControl
             {
                 var totalSeconds = (endDtp.Value - startDtp.Value).TotalSeconds;
                 var gapSecond = ((int)totalSeconds) / plotWidth;
-                await RenderLineByOptimize(lineInfo.Name, gapSecond);
+                await RenderLineByOptimize(lineInfo.Name, gapSecond, lineInfo);
             }
             else
             {
@@ -1016,7 +1016,7 @@ namespace LineControl
             return count;
         }
 
-        private async Task RenderLineByOptimize(string tagName, double gapSecond)
+        private async Task RenderLineByOptimize(string tagName, double gapSecond,LineInfo lineInfo)
         {
             var dateTimes = new List<DateTime>();
             var yMaxValues = new List<double>();
@@ -1030,19 +1030,23 @@ namespace LineControl
 
                 var fluxMax = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"_field\"] == \"ivalue\" or r[\"_field\"] == \"bvalue\" or r[\"_field\"] == \"dvalue\")" + Environment.NewLine +
                     $"|> filter(fn: (r) => r[\"name\"] == \"{tagName}\")" + Environment.NewLine +
                     $"|> aggregateWindow(every: {gapSecond}s, fn: max)";
 
                 var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxMax, orgID);
-
                 fluxCountTable.ForEach(fluxTable =>
                 {
                     var fluxRecords = fluxTable.Records;
                     fluxRecords.ForEach(fluxRecord =>
                     {
                         DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
-                        double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out var yValue);
+                        
+                        double yValue = 0;
+                        if (null != fluxRecord.GetValueByKey("_value"))
+                        {
+                            double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out yValue);
+                        }
 
                         dateTimes.Add(dateTime);
                         yMaxValues.Add(yValue);
@@ -1051,7 +1055,7 @@ namespace LineControl
 
                 var fluxMin = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"_field\"] == \"ivalue\" or r[\"_field\"] == \"bvalue\" or r[\"_field\"] == \"dvalue\")" + Environment.NewLine +
                     "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")" + Environment.NewLine +
                     $"|> aggregateWindow(every: {gapSecond}s, fn: min)";
 
@@ -1063,23 +1067,26 @@ namespace LineControl
                     fluxRecords.ForEach(fluxRecord =>
                     {
                         DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
-                        double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out var yValue);
+
+                        double yValue = 0;
+                        if (null != fluxRecord.GetValueByKey("_value"))
+                        {
+                            double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out yValue);
+                        }
 
                         yMinValues.Add(yValue);
                     });
                 });
             }
 
-            //var dateTimesArray = dateTimes.ToArray();
-            //var yValuesArray = yMaxValues.ToArray();
-            //for (int i = 0; i < dateTimes.Count; i++)
-            //{
-            //    //var line = plot.Add.Line(dateTimesArray[i].ToOADate(), yValuesArray[i], dateTimesArray[i].ToOADate(), yValuesArray[i]);
-            //    var line = plot.Add.Line(dateTimesArray[i].ToOADate(), yValuesArray[i]-1, dateTimesArray[i].ToOADate(), yValuesArray[i]);
-            //    line.LineColor = ScottPlot.Colors.White;
-            //}
-            ////plot.Axes.DateTimeTicksBottom();
-            //
+            var count = dateTimes.Count;
+            for (var i = 0; i < count; i++)
+            {
+                var line = plot.Add.Line(dateTimes[i].ToOADate(), yMinValues[i], 
+                    dateTimes[i].ToOADate(), yMaxValues[i]);
+                line.LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor);
+                line.LineWidth = lineInfo.LineWidth;
+            }
         }
 
         private async Task RenderLineByNormal(LineInfo lineInfo)
@@ -1094,7 +1101,7 @@ namespace LineControl
 
                 var flux = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
+                    "|> filter(fn: (r) => r[\"_field\"] == \"ivalue\" or r[\"_field\"] == \"bvalue\" or r[\"_field\"] == \"dvalue\")" + Environment.NewLine +
                     $"|> filter(fn: (r) => r[\"name\"] == \"{lineInfo.Name}\")";
 
                 var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(flux, orgID);
@@ -1104,7 +1111,12 @@ namespace LineControl
                     fluxRecords.ForEach(fluxRecord =>
                     {
                         DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
-                        double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out var yValue);
+
+                        double yValue =0;
+                        if (null != fluxRecord.GetValueByKey("_value"))
+                        {
+                            double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out yValue);
+                        }
 
                         dateTimes.Add(dateTime);
                         yValues.Add(yValue);
