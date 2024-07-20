@@ -1180,18 +1180,20 @@ namespace LineControl
 
         #endregion
 
-        #region 导出
+        #region 导出图片
 
         private void btExport_Click(object sender, EventArgs e)
         {
             if (!isRuning)
                 return;
 
-            var dialog = new SaveFileDialog();
-            dialog.Filter = "Png 图片|*.png";
-            dialog.FilterIndex = 0;
-            dialog.RestoreDirectory = true;//保存对话框是否记忆上次打开的目录
-            dialog.CheckPathExists = true;//检查目录
+            var dialog = new SaveFileDialog
+            {
+                Filter = "Png 图片|*.png",
+                FilterIndex = 0,
+                RestoreDirectory = true,    //保存对话框是否记忆上次打开的目录
+                CheckPathExists = true      //检查目录
+            };
 
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
