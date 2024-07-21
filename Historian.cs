@@ -567,6 +567,7 @@ namespace LineControl
         private void UserControl_Load(object sender, EventArgs e)
         {
             InitPlot();
+            //TestSpan();
             InitDateTime();
 
             #region 用于测试
@@ -644,6 +645,16 @@ namespace LineControl
             formsPlot.Interaction.Disable();
 
             formsPlot.DoubleClick += chart_DoubleClick;
+        }
+
+        private void TestSpan()
+        {
+            var span = plot.Add.HorizontalSpan((DateTime.Now - TimeSpan.FromSeconds(60)).ToOADate(), 
+                (DateTime.Now - TimeSpan.FromSeconds(30)).ToOADate());
+
+            span.FillColor = Colors.LightYellow.WithOpacity(0.3) ;
+            span.IsDraggable = true;
+            span.IsResizable = true;
         }
 
         private void InitDateTime()
