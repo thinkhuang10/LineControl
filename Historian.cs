@@ -947,44 +947,44 @@ namespace LineControl
         private async void btQuery_Click(object sender, EventArgs e)
         {
             // TODO: 用于测试的曲线
-            //ShowTestLine();
+            ShowTestLine();
 
             // 实际查询曲线
-            if (!isRuning)
-                return;
+            //if (!isRuning)
+            //    return;
 
-            if (startDtp.Value > endDtp.Value)
-            {
-                MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            //if (dtpStart.Value > dtpEnd.Value)
+            //{
+            //    MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
 
-            if (saveData.lineInfos.Count == 0)
-                return;
+            //if (saveData.lineInfos.Count == 0)
+            //    return;
 
-            plot.Clear();
+            //plot.Clear();
 
-            foreach (var tagName in saveData.lineInfos.Keys)
-            {
-                var lineInfo = saveData.lineInfos[tagName];
-                var linePointCount = await GetLinePointCount(tagName);
+            //foreach (var tagName in saveData.lineInfos.Keys)
+            //{
+            //    var lineInfo = saveData.lineInfos[tagName];
+            //    var linePointCount = await GetLinePointCount(tagName);
 
-                // 一定要等待曲线绘制完成
-                await RenderLines(lineInfo, linePointCount);
-            }
+            //    // 一定要等待曲线绘制完成
+            //    await RenderLines(lineInfo, linePointCount);
+            //}
 
-            SetPlotBackground();
-            SetPlotGridColor();
+            //SetPlotBackground();
+            //SetPlotGridColor();
 
-            SetXAxisTick();
-            SetYAxisTick();
-            SetXAxisTitle();
-            SetYAxisTitle();
+            //SetXAxisTick();
+            //SetYAxisTick();
+            //SetXAxisTitle();
+            //SetYAxisTitle();
 
-            SetTickStyle();
-            SetLegend();
+            //SetTickStyle();
+            //SetLegend();
 
-            RefreshPlot();
+            //RefreshPlot();
         }
 
         private void ShowTestLine()
