@@ -2,6 +2,7 @@
 using InfluxDB.Client;
 using LineControl.Properties;
 using ScottPlot;
+using ScottPlot.Control;
 using ScottPlot.Panels;
 using ScottPlot.TickGenerators;
 using ScottPlot.TickGenerators.TimeUnits;
@@ -567,6 +568,7 @@ namespace LineControl
         private void UserControl_Load(object sender, EventArgs e)
         {
             InitPlot();
+            InitPlotMenu();
             //TestSpan();
             InitDateTime();
 
@@ -642,9 +644,60 @@ namespace LineControl
 
             // 屏蔽ScottPlot自带的双击显示
             // 同时屏蔽掉放大,缩小，左右移动等操作
-            formsPlot.Interaction.Disable();
+            //formsPlot.Interaction.Disable();
+
+            // 屏蔽ScottPlot自带的双击显示
+            PlotActions customActions = PlotActions.Standard();
+            customActions.ToggleBenchmark = delegate { };
+            formsPlot.Interaction.Enable(customActions);
 
             formsPlot.DoubleClick += chart_DoubleClick;
+        }
+
+        private void InitPlotMenu()
+        {
+            // 清空右键菜单
+            formsPlot.Menu.Clear();
+
+            // 自定义右键菜单
+            formsPlot.Menu.Add("导出图片", (formsplot) =>
+            {
+                btExport_Click(null,null);
+            });
+
+            formsPlot.Menu.Add("粘贴到剪贴板", (formsplot) =>
+            {
+                CopyImageToClipboard(formsplot);
+            });
+
+            formsPlot.Menu.Add("打开新窗口", (formsplot) =>
+            {
+                OpenInNewWindow(formsplot);
+            });
+        }
+
+        private void OpenInNewWindow(IPlotControl ctrl)
+        {
+            var fp = new FormsPlot() { Dock = DockStyle.Fill };
+            fp.Reset(ctrl.Plot);
+
+            var form = new Form();
+            form.Controls.Add(fp);
+            form.ShowDialog();
+        }
+
+        private static void CopyImageToClipboard(IPlotControl plotControl)
+        {
+            var lastRenderSize = plotControl.Plot.RenderManager.LastRender.FigureRect.Size;
+            var bmp = plotControl.Plot.GetImage((int)lastRenderSize.Width, (int)lastRenderSize.Height);
+            byte[] bmpBytes = bmp.GetImageBytes();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                ms.Write(bmpBytes, 0, bmpBytes.Length);
+                Bitmap bmpImage = new Bitmap(ms);
+                Clipboard.SetImage(bmpImage);
+            }
         }
 
         private void TestSpan()
@@ -660,10 +713,10 @@ namespace LineControl
         private void InitDateTime()
         {
             // TODO：测试,获取两分钟的数据
-            startDtp.Value = DateTime.Now - TimeSpan.FromMinutes(2);
+            dtpStart.Value = DateTime.Now - TimeSpan.FromMinutes(2);
 
             //startDtp.Value = DateTime.Now - TimeSpan.FromHours(1);
-            endDtp.Value = DateTime.Now;
+            dtpEnd.Value = DateTime.Now;
         }
 
         #endregion
@@ -746,8 +799,8 @@ namespace LineControl
             //dtx.TickGenerator = new DateTimeFixedInterval(new Second(), (int)timeGap);
 
             // 自动化分割网格
-            var startTime = startDtp.Value;
-            var endTime = endDtp.Value;
+            var startTime = dtpStart.Value;
+            var endTime = dtpEnd.Value;
             
             var dtx = plot.Axes.DateTimeTicksBottom();
             var timeGap = endTime.Subtract(startTime).TotalSeconds / saveData.verticalGridCount;
@@ -941,22 +994,22 @@ namespace LineControl
             var count = 1000;
             var minValues = new float[count];
             var maxValues = new float[count];
-            var val = 0.0f;
+            var val = -10.0f;
             for (var i = 0; i < count; i++)
             {
                 minValues[i] = val;
                 maxValues[i] = val + 1;
                 val++;
 
-                if (val > 100)
+                if (val > 10)
                 {
-                    val = 0;
+                    val = -10;
                 }
             }
 
             for (int i = 0; i < count; i++)
             {
-                var time = startDtp.Value + TimeSpan.FromSeconds(i);
+                var time = dtpStart.Value + TimeSpan.FromSeconds(i);
                 var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
                 line.LineColor = ScottPlot.Colors.Red;
 
@@ -987,7 +1040,7 @@ namespace LineControl
             var plotWidth = formsPlot.Width;     // 获取控件的像素点数
             if (linePointCount > plotWidth)
             {
-                var totalSeconds = (endDtp.Value - startDtp.Value).TotalSeconds;
+                var totalSeconds = (dtpEnd.Value - dtpStart.Value).TotalSeconds;
                 var gapSecond = ((int)totalSeconds) / plotWidth;
                 await RenderLineByOptimize(lineInfo.Name, gapSecond, lineInfo);
             }
@@ -1003,8 +1056,8 @@ namespace LineControl
             using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
             {
                 // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
-                var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
-                var endTime = endDtp.Value.ToUniversalTime().ToString("s") + "Z";
+                var startTime = dtpStart.Value.ToUniversalTime().ToString("s") + "Z";
+                var endTime = dtpEnd.Value.ToUniversalTime().ToString("s") + "Z";
 
                 // 获取表格的总行数
                 var fluxCount = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
@@ -1036,8 +1089,8 @@ namespace LineControl
             using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
             {
                 // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
-                var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
-                var endTime = endDtp.Value.ToUniversalTime().ToString("s") + "Z";
+                var startTime = dtpStart.Value.ToUniversalTime().ToString("s") + "Z";
+                var endTime = dtpEnd.Value.ToUniversalTime().ToString("s") + "Z";
 
                 var fluxMax = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
@@ -1107,8 +1160,8 @@ namespace LineControl
             using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
             {
                 // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
-                var startTime = startDtp.Value.ToUniversalTime().ToString("s") + "Z";
-                var endTime = endDtp.Value.ToUniversalTime().ToString("s") + "Z";
+                var startTime = dtpStart.Value.ToUniversalTime().ToString("s") + "Z";
+                var endTime = dtpEnd.Value.ToUniversalTime().ToString("s") + "Z";
 
                 var flux = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
@@ -1142,6 +1195,30 @@ namespace LineControl
 
         #endregion
 
+        #region 刷新
+
+        /// <summary>
+        /// 放大后刷新
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btRefresh_Click(object sender, EventArgs e)
+        {
+            // 获取到当前时间戳并重新查询
+            var min = plot.Axes.GetAxes(Edge.Bottom).First().Min;
+            var max = plot.Axes.GetAxes(Edge.Bottom).First().Max;
+            var minDateTime = DateTime.FromOADate(min);
+            var maxDateTime = DateTime.FromOADate(max);
+
+            // 点击刷新会更改控件的日期范围并自动触发刷新
+            dtpStart.Value = minDateTime;
+            dtpEnd.Value = maxDateTime;
+
+            btQuery_Click(null,null);
+        }
+
+        #endregion
+
         #region 放大缩小
 
         private void btReset_Click(object sender, EventArgs e)
@@ -1151,32 +1228,47 @@ namespace LineControl
 
         private void btZoomIn_Click(object sender, EventArgs e)
         {
-            plot.Axes.ZoomIn(2, 2);
+            // 放大倍数，目前是默认同时上下左右放大1.1倍
+            plot.Axes.ZoomIn(1, 1.1);
             formsPlot.Refresh();
         }
 
         private void btZoomOut_Click(object sender, EventArgs e)
         {
-            plot.Axes.ZoomOut(2, 2);
+            // 放大倍数，目前是默认同时上下左右缩小1.1倍
+            plot.Axes.ZoomOut(1, 1.1);
             formsPlot.Refresh();
         }
 
         private void btPanningLeft_Click(object sender, EventArgs e)
         {
-            var offset = new CoordinateOffset(0.01, 0);
+            // TODO: 固定向左偏移,固定30秒
+            // 获取到当前时间戳并重新查询
+            var minDate = plot.Axes.GetAxes(Edge.Bottom).First().Min;
+            var minDateTime = DateTime.FromOADate(minDate);
+            var expectedDate = minDateTime.AddSeconds(30).ToOADate();
+
+            var offset = new CoordinateOffset(minDate - expectedDate, 0);
             plot.Axes.Pan(offset);
             formsPlot.Refresh();
         }
 
         private void btPanningRight_Click(object sender, EventArgs e)
         {
-            var offset = new CoordinateOffset(-0.01, 0);
+            // TODO: 固定向右偏移,固定30秒
+            // 获取到当前时间戳并重新查询
+            var maxDate = plot.Axes.GetAxes(Edge.Bottom).First().Max;
+            var maxDateTime = DateTime.FromOADate(maxDate);
+            var expectedDate = maxDateTime.AddSeconds(30).ToOADate();
+
+            var offset = new CoordinateOffset(expectedDate - maxDate, 0);
             plot.Axes.Pan(offset);
             formsPlot.Refresh();
         }
 
         private void btPanningUp_Click(object sender, EventArgs e)
         {
+            // TODO: 固定向上偏移10
             var offset = new CoordinateOffset(0, 10);
             plot.Axes.Pan(offset);
             formsPlot.Refresh();
@@ -1184,6 +1276,7 @@ namespace LineControl
 
         private void btPanningDown_Click(object sender, EventArgs e)
         {
+            // TODO: 固定向下偏移10
             var offset = new CoordinateOffset(0, -10);
             plot.Axes.Pan(offset);
             formsPlot.Refresh();
@@ -1210,7 +1303,7 @@ namespace LineControl
                 return;
                 
             plot.SavePng(dialog.FileName, formsPlot.Width, formsPlot.Height);
-            MessageBox.Show("图片保存成功.", "信息提示");
+            //MessageBox.Show("图片保存成功.", "信息提示");
         }
 
         #endregion
@@ -1273,7 +1366,7 @@ namespace LineControl
         {
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(btExport, "打印预览");
+            toolTip.SetToolTip(btPrintPreview, "打印预览");
         }
 
         private void btPrint_MouseEnter(object sender, EventArgs e)
@@ -1287,49 +1380,56 @@ namespace LineControl
         {
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(btPrint, "重置");
+            toolTip.SetToolTip(btReset, "重置");
         }
 
         private void btZoomIn_MouseEnter(object sender, EventArgs e)
         {
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(btPrint, "放大");
+            toolTip.SetToolTip(btZoomIn, "放大");
         }
 
         private void btZoomOut_MouseEnter(object sender, EventArgs e)
         {
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(btPrint, "缩小");
+            toolTip.SetToolTip(btZoomOut, "缩小");
         }
 
         private void btPanningLeft_MouseEnter(object sender, EventArgs e)
         {
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(btPrint, "左移");
+            toolTip.SetToolTip(btPanningLeft, "左移");
         }
 
         private void btPanningRight_MouseEnter(object sender, EventArgs e)
         {
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(btPrint, "右移");
+            toolTip.SetToolTip(btPanningRight, "右移");
         }
 
         private void btPanningUp_MouseEnter(object sender, EventArgs e)
         {
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(btPrint, "上移");
+            toolTip.SetToolTip(btPanningUp, "上移");
         }
 
         private void btPanningDown_MouseEnter(object sender, EventArgs e)
         {
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(btPrint, "下移");
+            toolTip.SetToolTip(btPanningDown, "下移");
+        }
+
+        private void btRefresh_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btRefresh, "刷新");
         }
 
         #endregion

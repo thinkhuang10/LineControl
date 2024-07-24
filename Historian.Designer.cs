@@ -32,6 +32,9 @@
             this.FrameTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.panelChart = new System.Windows.Forms.Panel();
             this.panelQuery = new System.Windows.Forms.Panel();
+            this.btRefresh = new System.Windows.Forms.Button();
+            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
+            this.dtpStart = new System.Windows.Forms.DateTimePicker();
             this.btPanningDown = new System.Windows.Forms.Button();
             this.btPanningUp = new System.Windows.Forms.Button();
             this.btPanningRight = new System.Windows.Forms.Button();
@@ -43,8 +46,6 @@
             this.btExport = new System.Windows.Forms.Button();
             this.btPrint = new System.Windows.Forms.Button();
             this.btQuery = new System.Windows.Forms.Button();
-            this.endDtp = new System.Windows.Forms.DateTimePicker();
-            this.startDtp = new System.Windows.Forms.DateTimePicker();
             this.FrameTableLayoutPanel.SuspendLayout();
             this.panelQuery.SuspendLayout();
             this.SuspendLayout();
@@ -57,12 +58,11 @@
             this.FrameTableLayoutPanel.Controls.Add(this.panelQuery, 0, 1);
             this.FrameTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FrameTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
-            this.FrameTableLayoutPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.FrameTableLayoutPanel.Name = "FrameTableLayoutPanel";
             this.FrameTableLayoutPanel.RowCount = 2;
             this.FrameTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 93.22222F));
             this.FrameTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 6.777778F));
-            this.FrameTableLayoutPanel.Size = new System.Drawing.Size(800, 540);
+            this.FrameTableLayoutPanel.Size = new System.Drawing.Size(1200, 900);
             this.FrameTableLayoutPanel.TabIndex = 0;
             // 
             // panelChart
@@ -71,11 +71,12 @@
             this.panelChart.Location = new System.Drawing.Point(0, 0);
             this.panelChart.Margin = new System.Windows.Forms.Padding(0);
             this.panelChart.Name = "panelChart";
-            this.panelChart.Size = new System.Drawing.Size(800, 503);
+            this.panelChart.Size = new System.Drawing.Size(1200, 839);
             this.panelChart.TabIndex = 0;
             // 
             // panelQuery
             // 
+            this.panelQuery.Controls.Add(this.btRefresh);
             this.panelQuery.Controls.Add(this.btPanningDown);
             this.panelQuery.Controls.Add(this.btPanningUp);
             this.panelQuery.Controls.Add(this.btPanningRight);
@@ -87,22 +88,52 @@
             this.panelQuery.Controls.Add(this.btExport);
             this.panelQuery.Controls.Add(this.btPrint);
             this.panelQuery.Controls.Add(this.btQuery);
-            this.panelQuery.Controls.Add(this.endDtp);
-            this.panelQuery.Controls.Add(this.startDtp);
+            this.panelQuery.Controls.Add(this.dtpEnd);
+            this.panelQuery.Controls.Add(this.dtpStart);
             this.panelQuery.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelQuery.Location = new System.Drawing.Point(0, 503);
+            this.panelQuery.Location = new System.Drawing.Point(0, 839);
             this.panelQuery.Margin = new System.Windows.Forms.Padding(0);
             this.panelQuery.Name = "panelQuery";
-            this.panelQuery.Size = new System.Drawing.Size(800, 37);
+            this.panelQuery.Size = new System.Drawing.Size(1200, 61);
             this.panelQuery.TabIndex = 1;
+            // 
+            // btRefresh
+            // 
+            this.btRefresh.Location = new System.Drawing.Point(1058, 13);
+            this.btRefresh.Name = "btRefresh";
+            this.btRefresh.Size = new System.Drawing.Size(93, 37);
+            this.btRefresh.TabIndex = 13;
+            this.btRefresh.Text = "刷新";
+            this.btRefresh.UseVisualStyleBackColor = true;
+            this.btRefresh.Click += new System.EventHandler(this.btRefresh_Click);
+            this.btRefresh.MouseEnter += new System.EventHandler(this.btRefresh_MouseEnter);
+            // 
+            // dtpEnd
+            // 
+            this.dtpEnd.CustomFormat = "yyyy-MM-dd HH:mm:ss";
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpEnd.Location = new System.Drawing.Point(284, 13);
+            this.dtpEnd.Name = "dtpEnd";
+            this.dtpEnd.Size = new System.Drawing.Size(238, 26);
+            this.dtpEnd.TabIndex = 1;
+            // 
+            // dtpStart
+            // 
+            this.dtpStart.CustomFormat = "yyyy-MM-dd HH:mm:ss";
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpStart.Location = new System.Drawing.Point(22, 13);
+            this.dtpStart.Name = "dtpStart";
+            this.dtpStart.Size = new System.Drawing.Size(238, 26);
+            this.dtpStart.TabIndex = 0;
             // 
             // btPanningDown
             // 
             this.btPanningDown.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btPanningDown.BackgroundImage")));
             this.btPanningDown.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btPanningDown.Location = new System.Drawing.Point(667, 7);
+            this.btPanningDown.Location = new System.Drawing.Point(1000, 12);
+            this.btPanningDown.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btPanningDown.Name = "btPanningDown";
-            this.btPanningDown.Size = new System.Drawing.Size(23, 23);
+            this.btPanningDown.Size = new System.Drawing.Size(34, 38);
             this.btPanningDown.TabIndex = 12;
             this.btPanningDown.UseVisualStyleBackColor = true;
             this.btPanningDown.Click += new System.EventHandler(this.btPanningDown_Click);
@@ -112,9 +143,10 @@
             // 
             this.btPanningUp.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btPanningUp.BackgroundImage")));
             this.btPanningUp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btPanningUp.Location = new System.Drawing.Point(639, 7);
+            this.btPanningUp.Location = new System.Drawing.Point(958, 12);
+            this.btPanningUp.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btPanningUp.Name = "btPanningUp";
-            this.btPanningUp.Size = new System.Drawing.Size(23, 23);
+            this.btPanningUp.Size = new System.Drawing.Size(34, 38);
             this.btPanningUp.TabIndex = 11;
             this.btPanningUp.UseVisualStyleBackColor = true;
             this.btPanningUp.Click += new System.EventHandler(this.btPanningUp_Click);
@@ -124,9 +156,10 @@
             // 
             this.btPanningRight.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btPanningRight.BackgroundImage")));
             this.btPanningRight.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btPanningRight.Location = new System.Drawing.Point(611, 7);
+            this.btPanningRight.Location = new System.Drawing.Point(916, 12);
+            this.btPanningRight.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btPanningRight.Name = "btPanningRight";
-            this.btPanningRight.Size = new System.Drawing.Size(23, 23);
+            this.btPanningRight.Size = new System.Drawing.Size(34, 38);
             this.btPanningRight.TabIndex = 10;
             this.btPanningRight.UseVisualStyleBackColor = true;
             this.btPanningRight.Click += new System.EventHandler(this.btPanningRight_Click);
@@ -136,9 +169,10 @@
             // 
             this.btPanningLeft.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btPanningLeft.BackgroundImage")));
             this.btPanningLeft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btPanningLeft.Location = new System.Drawing.Point(583, 7);
+            this.btPanningLeft.Location = new System.Drawing.Point(874, 12);
+            this.btPanningLeft.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btPanningLeft.Name = "btPanningLeft";
-            this.btPanningLeft.Size = new System.Drawing.Size(23, 23);
+            this.btPanningLeft.Size = new System.Drawing.Size(34, 38);
             this.btPanningLeft.TabIndex = 9;
             this.btPanningLeft.UseVisualStyleBackColor = true;
             this.btPanningLeft.Click += new System.EventHandler(this.btPanningLeft_Click);
@@ -148,9 +182,10 @@
             // 
             this.btZoomOut.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btZoomOut.BackgroundImage")));
             this.btZoomOut.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btZoomOut.Location = new System.Drawing.Point(555, 7);
+            this.btZoomOut.Location = new System.Drawing.Point(832, 12);
+            this.btZoomOut.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btZoomOut.Name = "btZoomOut";
-            this.btZoomOut.Size = new System.Drawing.Size(23, 23);
+            this.btZoomOut.Size = new System.Drawing.Size(34, 38);
             this.btZoomOut.TabIndex = 8;
             this.btZoomOut.UseVisualStyleBackColor = true;
             this.btZoomOut.Click += new System.EventHandler(this.btZoomOut_Click);
@@ -160,9 +195,10 @@
             // 
             this.btZoomIn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btZoomIn.BackgroundImage")));
             this.btZoomIn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btZoomIn.Location = new System.Drawing.Point(527, 7);
+            this.btZoomIn.Location = new System.Drawing.Point(790, 12);
+            this.btZoomIn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btZoomIn.Name = "btZoomIn";
-            this.btZoomIn.Size = new System.Drawing.Size(23, 23);
+            this.btZoomIn.Size = new System.Drawing.Size(34, 38);
             this.btZoomIn.TabIndex = 7;
             this.btZoomIn.UseVisualStyleBackColor = true;
             this.btZoomIn.Click += new System.EventHandler(this.btZoomIn_Click);
@@ -172,9 +208,10 @@
             // 
             this.btReset.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btReset.BackgroundImage")));
             this.btReset.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btReset.Location = new System.Drawing.Point(499, 7);
+            this.btReset.Location = new System.Drawing.Point(748, 12);
+            this.btReset.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btReset.Name = "btReset";
-            this.btReset.Size = new System.Drawing.Size(23, 23);
+            this.btReset.Size = new System.Drawing.Size(34, 38);
             this.btReset.TabIndex = 6;
             this.btReset.UseVisualStyleBackColor = true;
             this.btReset.Click += new System.EventHandler(this.btReset_Click);
@@ -184,9 +221,10 @@
             // 
             this.btPrintPreview.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btPrintPreview.BackgroundImage")));
             this.btPrintPreview.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btPrintPreview.Location = new System.Drawing.Point(426, 7);
+            this.btPrintPreview.Location = new System.Drawing.Point(639, 12);
+            this.btPrintPreview.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btPrintPreview.Name = "btPrintPreview";
-            this.btPrintPreview.Size = new System.Drawing.Size(23, 23);
+            this.btPrintPreview.Size = new System.Drawing.Size(34, 38);
             this.btPrintPreview.TabIndex = 5;
             this.btPrintPreview.UseVisualStyleBackColor = true;
             this.btPrintPreview.Click += new System.EventHandler(this.btPrintPreview_Click);
@@ -196,9 +234,10 @@
             // 
             this.btExport.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btExport.BackgroundImage")));
             this.btExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btExport.Location = new System.Drawing.Point(399, 7);
+            this.btExport.Location = new System.Drawing.Point(598, 12);
+            this.btExport.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btExport.Name = "btExport";
-            this.btExport.Size = new System.Drawing.Size(23, 23);
+            this.btExport.Size = new System.Drawing.Size(34, 38);
             this.btExport.TabIndex = 4;
             this.btExport.UseVisualStyleBackColor = true;
             this.btExport.Click += new System.EventHandler(this.btExport_Click);
@@ -208,9 +247,10 @@
             // 
             this.btPrint.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btPrint.BackgroundImage")));
             this.btPrint.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btPrint.Location = new System.Drawing.Point(453, 7);
+            this.btPrint.Location = new System.Drawing.Point(680, 12);
+            this.btPrint.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btPrint.Name = "btPrint";
-            this.btPrint.Size = new System.Drawing.Size(23, 23);
+            this.btPrint.Size = new System.Drawing.Size(34, 38);
             this.btPrint.TabIndex = 3;
             this.btPrint.UseVisualStyleBackColor = true;
             this.btPrint.Click += new System.EventHandler(this.btPrint_Click);
@@ -220,42 +260,22 @@
             // 
             this.btQuery.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btQuery.BackgroundImage")));
             this.btQuery.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btQuery.Location = new System.Drawing.Point(357, 7);
+            this.btQuery.Location = new System.Drawing.Point(536, 12);
+            this.btQuery.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btQuery.Name = "btQuery";
-            this.btQuery.Size = new System.Drawing.Size(23, 23);
+            this.btQuery.Size = new System.Drawing.Size(34, 38);
             this.btQuery.TabIndex = 2;
             this.btQuery.UseVisualStyleBackColor = true;
             this.btQuery.Click += new System.EventHandler(this.btQuery_Click);
             this.btQuery.MouseEnter += new System.EventHandler(this.btQuery_MouseEnter);
             // 
-            // endDtp
-            // 
-            this.endDtp.CustomFormat = "yyyy-MM-dd HH:mm:ss";
-            this.endDtp.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.endDtp.Location = new System.Drawing.Point(189, 8);
-            this.endDtp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.endDtp.Name = "endDtp";
-            this.endDtp.Size = new System.Drawing.Size(160, 21);
-            this.endDtp.TabIndex = 1;
-            // 
-            // startDtp
-            // 
-            this.startDtp.CustomFormat = "yyyy-MM-dd HH:mm:ss";
-            this.startDtp.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.startDtp.Location = new System.Drawing.Point(15, 8);
-            this.startDtp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.startDtp.Name = "startDtp";
-            this.startDtp.Size = new System.Drawing.Size(160, 21);
-            this.startDtp.TabIndex = 0;
-            // 
             // Historian
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.FrameTableLayoutPanel);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Historian";
-            this.Size = new System.Drawing.Size(800, 540);
+            this.Size = new System.Drawing.Size(1200, 900);
             this.Load += new System.EventHandler(this.UserControl_Load);
             this.FrameTableLayoutPanel.ResumeLayout(false);
             this.panelQuery.ResumeLayout(false);
@@ -268,8 +288,8 @@
         private System.Windows.Forms.TableLayoutPanel FrameTableLayoutPanel;
         private System.Windows.Forms.Panel panelChart;
         private System.Windows.Forms.Panel panelQuery;
-        private System.Windows.Forms.DateTimePicker startDtp;
-        private System.Windows.Forms.DateTimePicker endDtp;
+        private System.Windows.Forms.DateTimePicker dtpStart;
+        private System.Windows.Forms.DateTimePicker dtpEnd;
         private System.Windows.Forms.Button btQuery;
         private System.Windows.Forms.Button btPrint;
         private System.Windows.Forms.Button btExport;
@@ -281,5 +301,6 @@
         private System.Windows.Forms.Button btPanningUp;
         private System.Windows.Forms.Button btPanningRight;
         private System.Windows.Forms.Button btPanningLeft;
+        private System.Windows.Forms.Button btRefresh;
     }
 }
