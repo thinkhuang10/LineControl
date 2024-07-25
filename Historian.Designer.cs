@@ -33,8 +33,6 @@
             this.panelChart = new System.Windows.Forms.Panel();
             this.panelQuery = new System.Windows.Forms.Panel();
             this.btRefresh = new System.Windows.Forms.Button();
-            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
-            this.dtpStart = new System.Windows.Forms.DateTimePicker();
             this.btPanningDown = new System.Windows.Forms.Button();
             this.btPanningUp = new System.Windows.Forms.Button();
             this.btPanningRight = new System.Windows.Forms.Button();
@@ -46,8 +44,17 @@
             this.btExport = new System.Windows.Forms.Button();
             this.btPrint = new System.Windows.Forms.Button();
             this.btQuery = new System.Windows.Forms.Button();
+            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
+            this.dtpStart = new System.Windows.Forms.DateTimePicker();
+            this.splitContainerFrame = new System.Windows.Forms.SplitContainer();
+            this.dgvLines = new System.Windows.Forms.DataGridView();
             this.FrameTableLayoutPanel.SuspendLayout();
             this.panelQuery.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerFrame)).BeginInit();
+            this.splitContainerFrame.Panel1.SuspendLayout();
+            this.splitContainerFrame.Panel2.SuspendLayout();
+            this.splitContainerFrame.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLines)).BeginInit();
             this.SuspendLayout();
             // 
             // FrameTableLayoutPanel
@@ -62,7 +69,7 @@
             this.FrameTableLayoutPanel.RowCount = 2;
             this.FrameTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 93.22222F));
             this.FrameTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 6.777778F));
-            this.FrameTableLayoutPanel.Size = new System.Drawing.Size(1200, 900);
+            this.FrameTableLayoutPanel.Size = new System.Drawing.Size(1200, 730);
             this.FrameTableLayoutPanel.TabIndex = 0;
             // 
             // panelChart
@@ -71,7 +78,7 @@
             this.panelChart.Location = new System.Drawing.Point(0, 0);
             this.panelChart.Margin = new System.Windows.Forms.Padding(0);
             this.panelChart.Name = "panelChart";
-            this.panelChart.Size = new System.Drawing.Size(1200, 839);
+            this.panelChart.Size = new System.Drawing.Size(1200, 680);
             this.panelChart.TabIndex = 0;
             // 
             // panelQuery
@@ -91,10 +98,10 @@
             this.panelQuery.Controls.Add(this.dtpEnd);
             this.panelQuery.Controls.Add(this.dtpStart);
             this.panelQuery.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelQuery.Location = new System.Drawing.Point(0, 839);
+            this.panelQuery.Location = new System.Drawing.Point(0, 680);
             this.panelQuery.Margin = new System.Windows.Forms.Padding(0);
             this.panelQuery.Name = "panelQuery";
-            this.panelQuery.Size = new System.Drawing.Size(1200, 61);
+            this.panelQuery.Size = new System.Drawing.Size(1200, 50);
             this.panelQuery.TabIndex = 1;
             // 
             // btRefresh
@@ -107,24 +114,6 @@
             this.btRefresh.UseVisualStyleBackColor = true;
             this.btRefresh.Click += new System.EventHandler(this.btRefresh_Click);
             this.btRefresh.MouseEnter += new System.EventHandler(this.btRefresh_MouseEnter);
-            // 
-            // dtpEnd
-            // 
-            this.dtpEnd.CustomFormat = "yyyy-MM-dd HH:mm:ss";
-            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpEnd.Location = new System.Drawing.Point(284, 13);
-            this.dtpEnd.Name = "dtpEnd";
-            this.dtpEnd.Size = new System.Drawing.Size(238, 26);
-            this.dtpEnd.TabIndex = 1;
-            // 
-            // dtpStart
-            // 
-            this.dtpStart.CustomFormat = "yyyy-MM-dd HH:mm:ss";
-            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpStart.Location = new System.Drawing.Point(22, 13);
-            this.dtpStart.Name = "dtpStart";
-            this.dtpStart.Size = new System.Drawing.Size(238, 26);
-            this.dtpStart.TabIndex = 0;
             // 
             // btPanningDown
             // 
@@ -269,16 +258,74 @@
             this.btQuery.Click += new System.EventHandler(this.btQuery_Click);
             this.btQuery.MouseEnter += new System.EventHandler(this.btQuery_MouseEnter);
             // 
+            // dtpEnd
+            // 
+            this.dtpEnd.CustomFormat = "yyyy-MM-dd HH:mm:ss";
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpEnd.Location = new System.Drawing.Point(284, 13);
+            this.dtpEnd.Name = "dtpEnd";
+            this.dtpEnd.Size = new System.Drawing.Size(238, 26);
+            this.dtpEnd.TabIndex = 1;
+            // 
+            // dtpStart
+            // 
+            this.dtpStart.CustomFormat = "yyyy-MM-dd HH:mm:ss";
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpStart.Location = new System.Drawing.Point(22, 13);
+            this.dtpStart.Name = "dtpStart";
+            this.dtpStart.Size = new System.Drawing.Size(238, 26);
+            this.dtpStart.TabIndex = 0;
+            // 
+            // splitContainerFrame
+            // 
+            this.splitContainerFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainerFrame.Location = new System.Drawing.Point(0, 0);
+            this.splitContainerFrame.Name = "splitContainerFrame";
+            this.splitContainerFrame.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainerFrame.Panel1
+            // 
+            this.splitContainerFrame.Panel1.Controls.Add(this.dgvLines);
+            // 
+            // splitContainerFrame.Panel2
+            // 
+            this.splitContainerFrame.Panel2.Controls.Add(this.FrameTableLayoutPanel);
+            this.splitContainerFrame.Size = new System.Drawing.Size(1200, 900);
+            this.splitContainerFrame.SplitterDistance = 166;
+            this.splitContainerFrame.TabIndex = 1;
+            // 
+            // dgvLines
+            // 
+            this.dgvLines.AllowUserToAddRows = false;
+            this.dgvLines.AllowUserToDeleteRows = false;
+            this.dgvLines.AllowUserToResizeRows = false;
+            this.dgvLines.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvLines.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvLines.Location = new System.Drawing.Point(0, 0);
+            this.dgvLines.Name = "dgvLines";
+            this.dgvLines.RowHeadersVisible = false;
+            this.dgvLines.RowHeadersWidth = 62;
+            this.dgvLines.RowTemplate.Height = 28;
+            this.dgvLines.Size = new System.Drawing.Size(1200, 166);
+            this.dgvLines.TabIndex = 0;
+            this.dgvLines.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLines_CellContentClick);
+            this.dgvLines.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLines_CellValueChanged);
+            // 
             // Historian
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.FrameTableLayoutPanel);
+            this.Controls.Add(this.splitContainerFrame);
             this.Name = "Historian";
             this.Size = new System.Drawing.Size(1200, 900);
             this.Load += new System.EventHandler(this.UserControl_Load);
             this.FrameTableLayoutPanel.ResumeLayout(false);
             this.panelQuery.ResumeLayout(false);
+            this.splitContainerFrame.Panel1.ResumeLayout(false);
+            this.splitContainerFrame.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerFrame)).EndInit();
+            this.splitContainerFrame.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLines)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -302,5 +349,7 @@
         private System.Windows.Forms.Button btPanningRight;
         private System.Windows.Forms.Button btPanningLeft;
         private System.Windows.Forms.Button btRefresh;
+        private System.Windows.Forms.SplitContainer splitContainerFrame;
+        private System.Windows.Forms.DataGridView dgvLines;
     }
 }

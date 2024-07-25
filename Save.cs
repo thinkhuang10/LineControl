@@ -57,6 +57,12 @@ namespace LineControl
 
         public string legendPosition = "上方";
 
+        public List<string> AllColumns = new List<string>() {
+            CommonConstant.ColumnHeaderLineShow,CommonConstant.ColumnHeaderLineName,
+            CommonConstant.ColumnHeaderLineDescription,CommonConstant.ColumnHeaderLowerLimit,
+            CommonConstant.ColumnHeaderUpperLimit
+        };
+
         // TODO：方便测试
         public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>() {
             {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Green, LineWidth =1} },

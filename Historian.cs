@@ -2,14 +2,15 @@
 using InfluxDB.Client;
 using LineControl.Properties;
 using ScottPlot;
-using ScottPlot.Control;
 using ScottPlot.Panels;
+using ScottPlot.Plottables;
 using ScottPlot.TickGenerators;
 using ScottPlot.TickGenerators.TimeUnits;
 using ScottPlot.WinForms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
@@ -37,6 +38,10 @@ namespace LineControl
         private Plot plot;
 
         private Save saveData = new Save();
+
+        public DataTable dataTable;
+
+        private Dictionary<string, List<LinePlot>> dicLine = new Dictionary<string, List<LinePlot>>();
 
         #endregion
 
@@ -571,6 +576,8 @@ namespace LineControl
             InitPlotMenu();
             //TestSpan();
             InitDateTime();
+            InitDatatable();
+            SetDatatable();
 
             #region 用于测试
 
@@ -637,6 +644,59 @@ namespace LineControl
             RefreshPlot();
         }
 
+        private void InitDatatable()
+        {
+            // 添加表格列并绑定数据源
+            dataTable = new DataTable();
+            dgvLines.DataSource = dataTable;
+
+            // 添加所有列到表格中,并根据设置隐藏列
+            // 添加所有列到表格中,并根据设置隐藏列
+            for (var i = 0; i < saveData.AllColumns.Count; i++)
+            {
+                var columnName = saveData.AllColumns[i];
+
+                if (columnName == CommonConstant.ColumnHeaderLineShow)
+                {
+                    var column = dataTable.Columns.Add(columnName, typeof(bool));
+                    column.ReadOnly = false;
+                }
+                else
+                {
+                    var column = dataTable.Columns.Add(columnName);
+                    column.ReadOnly = true;
+                }
+            }
+
+            // 设置列宽
+            dgvLines.Columns[CommonConstant.ColumnHeaderLineName].Width = 200;
+            dgvLines.Columns[CommonConstant.ColumnHeaderLineShow].Width = 80;
+            dgvLines.Columns[CommonConstant.ColumnHeaderLineDescription].Width = 200;
+            dgvLines.Columns[CommonConstant.ColumnHeaderLowerLimit].Width = 80;
+            dgvLines.Columns[CommonConstant.ColumnHeaderUpperLimit].Width = 80;
+
+            // 禁止表格快速排序，避免bug
+            for (var i = 0; i < dgvLines.Columns.Count; i++)
+            {
+                dgvLines.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+
+        }
+
+        private void SetDatatable()
+        {
+            foreach (var item in saveData.lineInfos)
+            { 
+                var dr = dataTable.NewRow();
+                dr[CommonConstant.ColumnHeaderLineName] = item.Value.Name;
+                //dr[CommonConstant.ColumnHeaderLineShow] = new CheckBox();
+                dr[CommonConstant.ColumnHeaderLineDescription] = item.Value.Description;
+                dr[CommonConstant.ColumnHeaderLowerLimit] = item.Value.LowerLimitValue;
+                dr[CommonConstant.ColumnHeaderUpperLimit] = item.Value.UpperLimitValue;
+                dataTable.Rows.Add(dr);
+            }
+        }
+
         private void InitPlot()
         {
             plot = formsPlot.Plot;
@@ -644,12 +704,12 @@ namespace LineControl
 
             // 屏蔽ScottPlot自带的双击显示
             // 同时屏蔽掉放大,缩小，左右移动等操作
-            //formsPlot.Interaction.Disable();
+            formsPlot.Interaction.Disable();
 
             // 屏蔽ScottPlot自带的双击显示
-            PlotActions customActions = PlotActions.Standard();
-            customActions.ToggleBenchmark = delegate { };
-            formsPlot.Interaction.Enable(customActions);
+            //PlotActions customActions = PlotActions.Standard();
+            //customActions.ToggleBenchmark = delegate { };
+            //formsPlot.Interaction.Enable(customActions);
 
             formsPlot.DoubleClick += chart_DoubleClick;
         }
@@ -953,7 +1013,7 @@ namespace LineControl
             //if (!isRuning)
             //    return;
 
-            //if (dtpStart.Value > dtpEnd.Value)
+            //if (startDtp.Value > endDtp.Value)
             //{
             //    MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             //    return;
@@ -1007,11 +1067,23 @@ namespace LineControl
                 }
             }
 
+            var lineName = "Tag3";
+            if (!dicLine.ContainsKey(lineName))
+            {
+                dicLine.Add(lineName, new List<LinePlot>());
+            }
+            else
+            {
+                dicLine[lineName] = new List<LinePlot>();
+            }
+            
             for (int i = 0; i < count; i++)
             {
                 var time = dtpStart.Value + TimeSpan.FromSeconds(i);
                 var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
                 line.LineColor = ScottPlot.Colors.Red;
+                
+                dicLine[lineName].Add(line);
 
                 if (i != count - 1)
                 {
@@ -1434,5 +1506,31 @@ namespace LineControl
 
         #endregion
 
+        private void dgvLines_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            dgvLines.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
+        private void dgvLines_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            var checkCell = (DataGridViewCheckBoxCell)dgvLines.Rows[e.RowIndex].Cells[CommonConstant.ColumnHeaderLineShow];
+            var isChecked = !(Boolean)checkCell.Value;
+
+            var textBoxCell =(DataGridViewTextBoxCell)dgvLines.Rows[e.RowIndex].Cells[CommonConstant.ColumnHeaderLineName];
+            var lineName = textBoxCell.Value.ToString();
+
+
+            if (dicLine.ContainsKey(lineName))
+            {
+                foreach (var item in dicLine[lineName])
+                {
+                    if(isChecked)
+                        item.IsVisible = false;
+                    else
+                        item.IsVisible = true;
+                }
+                formsPlot.Refresh();
+            }
+        }
     }
 }
