@@ -247,6 +247,7 @@ namespace LineControl
             LineColor.BackColor = lineInfo.LineColor;
             tbLineWidth.Text = lineInfo.LineWidth.ToString();
             tbLineDescription.Text = lineInfo.Description;
+            tbUnit.Text = lineInfo.Unit;
 
             // 隐藏修改成功的Tooltip
             lbModifyLineTooltip.Visible = false;
@@ -296,11 +297,12 @@ namespace LineControl
             }
 
             var lineInfo = saveData.lineInfos[tagName];
-            saveData.lineInfos[tagName].LowerLimitValue = lowerLimitValue;
-            saveData.lineInfos[tagName].UpperLimitValue = upperLimitValue;
-            saveData.lineInfos[tagName].LineColor = LineColor.BackColor;
-            saveData.lineInfos[tagName].LineWidth = lineWidth;
-            saveData.lineInfos[tagName].Description = tbLineDescription.Text;
+            lineInfo.LowerLimitValue = lowerLimitValue;
+            lineInfo.UpperLimitValue = upperLimitValue;
+            lineInfo.LineColor = LineColor.BackColor;
+            lineInfo.LineWidth = lineWidth;
+            lineInfo.Description = tbLineDescription.Text;
+            lineInfo.Unit = tbUnit.Text;
 
             lbModifyLineTooltip.Visible = true;
         }

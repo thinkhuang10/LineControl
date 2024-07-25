@@ -41,7 +41,7 @@ namespace LineControl
 
         public DataTable dataTable;
 
-        private Dictionary<string, List<LinePlot>> dicLine = new Dictionary<string, List<LinePlot>>();
+        private Dictionary<string, List<object>> dicLine = new Dictionary<string, List<object>>();
 
         #endregion
 
@@ -669,9 +669,11 @@ namespace LineControl
             }
 
             // 设置列宽
+            dgvLines.Columns[CommonConstant.ColumnHeaderLineColor].Width = 60;
             dgvLines.Columns[CommonConstant.ColumnHeaderLineName].Width = 200;
             dgvLines.Columns[CommonConstant.ColumnHeaderLineShow].Width = 80;
             dgvLines.Columns[CommonConstant.ColumnHeaderLineDescription].Width = 200;
+            dgvLines.Columns[CommonConstant.ColumnHeaderLineUnit].Width = 60;
             dgvLines.Columns[CommonConstant.ColumnHeaderLowerLimit].Width = 80;
             dgvLines.Columns[CommonConstant.ColumnHeaderUpperLimit].Width = 80;
 
@@ -681,6 +683,9 @@ namespace LineControl
                 dgvLines.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
             }
 
+            // 表格选中后的颜色设置
+            dgvLines.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
+            dgvLines.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Black;
         }
 
         private void SetDatatable()
@@ -689,11 +694,26 @@ namespace LineControl
             { 
                 var dr = dataTable.NewRow();
                 dr[CommonConstant.ColumnHeaderLineName] = item.Value.Name;
-                //dr[CommonConstant.ColumnHeaderLineShow] = new CheckBox();
+                dr[CommonConstant.ColumnHeaderLineShow] = true; // 默认显示
                 dr[CommonConstant.ColumnHeaderLineDescription] = item.Value.Description;
+                dr[CommonConstant.ColumnHeaderLineUnit] = item.Value.Unit;
                 dr[CommonConstant.ColumnHeaderLowerLimit] = item.Value.LowerLimitValue;
                 dr[CommonConstant.ColumnHeaderUpperLimit] = item.Value.UpperLimitValue;
                 dataTable.Rows.Add(dr);
+            }
+        }
+
+        private void dgvLines_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            dgvLines.ClearSelection();
+            for (var i = 0; i < dgvLines.Rows.Count; i++)
+            {
+                var lineName = dgvLines.Rows[i].Cells[CommonConstant.ColumnHeaderLineName].Value.ToString();
+
+                if (!saveData.lineInfos.ContainsKey(lineName))
+                    continue;
+
+                dgvLines.Rows[i].Cells[CommonConstant.ColumnHeaderLineColor].Style.BackColor = saveData.lineInfos[lineName].LineColor;
             }
         }
 
@@ -1007,44 +1027,44 @@ namespace LineControl
         private async void btQuery_Click(object sender, EventArgs e)
         {
             // TODO: 用于测试的曲线
-            ShowTestLine();
+            //ShowTestLine();
 
             // 实际查询曲线
-            //if (!isRuning)
-            //    return;
+            if (!isRuning)
+                return;
 
-            //if (startDtp.Value > endDtp.Value)
-            //{
-            //    MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    return;
-            //}
+            if (dtpStart.Value > dtpEnd.Value)
+            {
+                MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-            //if (saveData.lineInfos.Count == 0)
-            //    return;
+            if (saveData.lineInfos.Count == 0)
+                return;
 
-            //plot.Clear();
+            plot.Clear();
 
-            //foreach (var tagName in saveData.lineInfos.Keys)
-            //{
-            //    var lineInfo = saveData.lineInfos[tagName];
-            //    var linePointCount = await GetLinePointCount(tagName);
+            foreach (var tagName in saveData.lineInfos.Keys)
+            {
+                var lineInfo = saveData.lineInfos[tagName];
+                var linePointCount = await GetLinePointCount(tagName);
 
-            //    // 一定要等待曲线绘制完成
-            //    await RenderLines(lineInfo, linePointCount);
-            //}
+                // 一定要等待曲线绘制完成
+                await RenderLines(lineInfo, linePointCount);
+            }
 
-            //SetPlotBackground();
-            //SetPlotGridColor();
+            SetPlotBackground();
+            SetPlotGridColor();
 
-            //SetXAxisTick();
-            //SetYAxisTick();
-            //SetXAxisTitle();
-            //SetYAxisTitle();
+            SetXAxisTick();
+            SetYAxisTick();
+            SetXAxisTitle();
+            SetYAxisTitle();
 
-            //SetTickStyle();
-            //SetLegend();
+            SetTickStyle();
+            SetLegend();
 
-            //RefreshPlot();
+            RefreshPlot();
         }
 
         private void ShowTestLine()
@@ -1070,11 +1090,11 @@ namespace LineControl
             var lineName = "Tag3";
             if (!dicLine.ContainsKey(lineName))
             {
-                dicLine.Add(lineName, new List<LinePlot>());
+                dicLine.Add(lineName, new List<object>());
             }
             else
             {
-                dicLine[lineName] = new List<LinePlot>();
+                dicLine[lineName] = new List<object>();
             }
             
             for (int i = 0; i < count; i++)
@@ -1090,6 +1110,7 @@ namespace LineControl
                     var timeMinAndMax = time + TimeSpan.FromSeconds(1);
                     var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
                     lineMinAndMax.LineColor = ScottPlot.Colors.Red;
+                    dicLine[lineName].Add(lineMinAndMax);
                 }
             }
 
@@ -1215,6 +1236,16 @@ namespace LineControl
                 });
             }
 
+            // 清空曲线重新添加
+            if (!dicLine.ContainsKey(tagName))
+            {
+                dicLine.Add(tagName, new List<object>());
+            }
+            else
+            {
+                dicLine[tagName] = new List<object>();
+            }
+
             var count = dateTimes.Count;
             for (var i = 0; i < count; i++)
             {
@@ -1222,6 +1253,19 @@ namespace LineControl
                     dateTimes[i].ToOADate(), yMaxValues[i]);
                 line.LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor);
                 line.LineWidth = lineInfo.LineWidth;
+
+                dicLine[tagName].Add(line); // 添加到字典中便于显示和隐藏
+
+                if (i != count - 1)
+                {
+                    var lineMinAndMax = plot.Add.Line(dateTimes[i].ToOADate(), yMaxValues[i], 
+                        dateTimes[i+1].ToOADate(), yMinValues[i + 1]);
+                    lineMinAndMax.LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor);
+                    lineMinAndMax.LineWidth = lineInfo.LineWidth;
+
+                    dicLine[tagName].Add(lineMinAndMax);// 添加到字典中便于显示和隐藏
+                }
+
             }
         }
 
@@ -1263,6 +1307,18 @@ namespace LineControl
             var line = plot.Add.ScatterLine(dateTimes.ToArray(), yValues.ToArray());
             line.Color = ScottPlot.Color.FromColor(lineInfo.LineColor);
             line.LineWidth = lineInfo.LineWidth;
+
+            // 曲线加入数据字典中, 便于显示和隐藏
+            var lineName = lineInfo.Name;
+            if (!dicLine.ContainsKey(lineName))
+            {
+                dicLine.Add(lineName, new List<object>());
+            }
+            else
+            {
+                dicLine[lineName] = new List<object>();
+            }
+            dicLine[lineInfo.Name].Add(line);
         }
 
         #endregion
@@ -1519,18 +1575,39 @@ namespace LineControl
             var textBoxCell =(DataGridViewTextBoxCell)dgvLines.Rows[e.RowIndex].Cells[CommonConstant.ColumnHeaderLineName];
             var lineName = textBoxCell.Value.ToString();
 
-
             if (dicLine.ContainsKey(lineName))
             {
                 foreach (var item in dicLine[lineName])
                 {
-                    if(isChecked)
-                        item.IsVisible = false;
-                    else
-                        item.IsVisible = true;
+                    // 判断是否为LinePlot
+                    var linePlot = item as LinePlot;
+                    if (null != linePlot)
+                    {
+                        if (isChecked)
+                            linePlot.IsVisible = false;
+                        else
+                            linePlot.IsVisible = true;
+
+                        continue;
+                    }
+
+                    // 判断是否为scatter
+                    var scatter = item as Scatter;
+                    if (null != scatter)
+                    {
+                        if (isChecked)
+                            scatter.IsVisible = false;
+                        else
+                            scatter.IsVisible = true;
+
+                        continue;
+                    }
                 }
+
                 formsPlot.Refresh();
             }
         }
+
+
     }
 }

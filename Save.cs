@@ -58,8 +58,10 @@ namespace LineControl
         public string legendPosition = "上方";
 
         public List<string> AllColumns = new List<string>() {
-            CommonConstant.ColumnHeaderLineShow,CommonConstant.ColumnHeaderLineName,
-            CommonConstant.ColumnHeaderLineDescription,CommonConstant.ColumnHeaderLowerLimit,
+            CommonConstant.ColumnHeaderLineShow,CommonConstant.ColumnHeaderLineColor,
+            CommonConstant.ColumnHeaderLineName,
+            CommonConstant.ColumnHeaderLineDescription,CommonConstant.ColumnHeaderLineUnit,
+            CommonConstant.ColumnHeaderLowerLimit,
             CommonConstant.ColumnHeaderUpperLimit
         };
 

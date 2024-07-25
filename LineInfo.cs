@@ -17,5 +17,7 @@ namespace LineControl
         public int LineWidth { get; set; } = 1;
 
         public string Description { set; get; } = string.Empty;
+
+        public string Unit { set; get; } = string.Empty;
     }
 }
