@@ -11,6 +11,8 @@ namespace LineControl
 
         public const string ColumnHeaderLineDescription = "描述";
 
+        public const string ColumnHeaderLineValue = "游标值";
+
         public const string ColumnHeaderLineUnit = "单位";
 
         public const string ColumnHeaderLowerLimit = "量程下限";

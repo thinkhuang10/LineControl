@@ -60,15 +60,19 @@ namespace LineControl
         public List<string> AllColumns = new List<string>() {
             CommonConstant.ColumnHeaderLineShow,CommonConstant.ColumnHeaderLineColor,
             CommonConstant.ColumnHeaderLineName,
-            CommonConstant.ColumnHeaderLineDescription,CommonConstant.ColumnHeaderLineUnit,
+            CommonConstant.ColumnHeaderLineDescription,
+            CommonConstant.ColumnHeaderLineValue, CommonConstant.ColumnHeaderLineUnit,
             CommonConstant.ColumnHeaderLowerLimit,
             CommonConstant.ColumnHeaderUpperLimit
         };
 
+        // 是否单轴显示
+        public bool isSingleAxisShow = true;
+
         // TODO：方便测试
         public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>() {
             {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Green, LineWidth =1} },
-            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Red, LineWidth =1} }
+            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = 100, UpperLimitValue = 200, LineColor = Color.Red, LineWidth =1} }
         };
     }
 }
