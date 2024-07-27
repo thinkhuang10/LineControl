@@ -1,5 +1,4 @@
 ﻿using CommonSnappableTypes;
-using InfluxDB.Client;
 using LineControl.Properties;
 using ScottPlot;
 using ScottPlot.AxisPanels;
@@ -25,14 +24,6 @@ namespace LineControl
     public partial class Historian: UserControl,IDCCEControl
     {
         #region 变量定义
-
-        private const string influxDBUrl = "http://localhost:8086";
-
-        private const string token = "n3rzVj62MZmpisZyy4VSlKaXc8IFMvHsWhQLzxsGXWZlRX5hzSVloAvCrLEacRDj1cS2x0uHUCGAhzR-lH99NQ==";
-
-        private const string orgID = "d726b22e0ead9045";
-
-        private const string projectGuid = "4B2DC4D9-38ED-42B8-6E2E-4665F0B54672";
 
         private readonly FormsPlot formsPlot = new FormsPlot() { Dock = DockStyle.Fill };
         
@@ -1179,7 +1170,7 @@ namespace LineControl
             foreach (var tagName in saveData.lineInfos.Keys)
             {
                 var lineInfo = saveData.lineInfos[tagName];
-                var linePointCount = await GetLinePointCount(tagName);
+                var linePointCount = await InfluxDBHelper.GetLinePointCount(dtpStart, dtpEnd, tagName);
 
                 // 一定要等待曲线绘制完成
                 await RenderLines(lineInfo, linePointCount);
@@ -1209,9 +1200,6 @@ namespace LineControl
 
             SetXAxisTick();
             SetYAxisTick();
-
-            //TestLine1();
-            //TestLine2();
 
             TestLine1_Optimize();
             TestLine2_Optimize();
@@ -1337,175 +1325,52 @@ namespace LineControl
             }
         }
 
-        private async Task<int> GetLinePointCount(string tagName)
-        {
-            var count = 0;
-            using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
-            {
-                // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
-                var startTime = dtpStart.Value.ToUniversalTime().ToString("s") + "Z";
-                var endTime = dtpEnd.Value.ToUniversalTime().ToString("s") + "Z";
-
-                // 获取表格的总行数
-                var fluxCount = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
-                    $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"_field\"] != \"quality\")" + Environment.NewLine +
-                    $"|> filter(fn: (r) => r[\"name\"] == \"{tagName}\")" + Environment.NewLine +
-                    "|> count()";
-
-                var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxCount, orgID);
-                fluxCountTable.ForEach(fluxTable =>
-                {
-                    var fluxRecords = fluxTable.Records;
-                    fluxRecords.ForEach(fluxRecord =>
-                    {
-                        int.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out count);
-                    });
-                });
-            }
-
-            return count;
-        }
-
         private async Task RenderLineByOptimize(LineInfo lineInfo, double gapSecond)
         {
-            string lineName = lineInfo.Name;
-
-            var dateTimes = new List<DateTime>();
-            var yMaxValues = new List<double>();
-            var yMinValues = new List<double>();
-
-            using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
-            {
-                // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
-                var startTime = dtpStart.Value.ToUniversalTime().ToString("s") + "Z";
-                var endTime = dtpEnd.Value.ToUniversalTime().ToString("s") + "Z";
-
-                var fluxMax = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
-                    $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"_field\"] == \"ivalue\" or r[\"_field\"] == \"bvalue\" or r[\"_field\"] == \"dvalue\")" + Environment.NewLine +
-                    $"|> filter(fn: (r) => r[\"name\"] == \"{lineName}\")" + Environment.NewLine +
-                    $"|> aggregateWindow(every: {gapSecond}s, fn: max)";
-
-                var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxMax, orgID);
-                fluxCountTable.ForEach(fluxTable =>
-                {
-                    var fluxRecords = fluxTable.Records;
-                    fluxRecords.ForEach(fluxRecord =>
-                    {
-                        DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
-                        
-                        double yValue = 0;
-                        if (null != fluxRecord.GetValueByKey("_value"))
-                        {
-                            double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out yValue);
-                        }
-
-                        dateTimes.Add(dateTime);
-                        yMaxValues.Add(yValue);
-                    });
-                });
-
-                var fluxMin = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
-                    $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"_field\"] == \"ivalue\" or r[\"_field\"] == \"bvalue\" or r[\"_field\"] == \"dvalue\")" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"name\"] == \"Tag7\")" + Environment.NewLine +
-                    $"|> aggregateWindow(every: {gapSecond}s, fn: min)";
-
-                var fluxCountTableMin = await influxDBClient.GetQueryApi().QueryAsync(fluxMin, orgID);
-
-                fluxCountTableMin.ForEach(fluxTable =>
-                {
-                    var fluxRecords = fluxTable.Records;
-                    fluxRecords.ForEach(fluxRecord =>
-                    {
-                        DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
-
-                        double yValue = 0;
-                        if (null != fluxRecord.GetValueByKey("_value"))
-                        {
-                            double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out yValue);
-                        }
-
-                        yMinValues.Add(yValue);
-                    });
-                });
-            }
+            var lineData = await InfluxDBHelper.GetAggregateData(dtpStart, dtpEnd, gapSecond, lineInfo.Name);
 
             var xDoubles = new List<double>();
             var yDoubles = new List<double>();
-            for (int i = 0; i < dateTimes.Count; i++)
+            for (int i = 0; i < lineData.dateTimes.Count; i++)
             {
-                xDoubles.Add(dateTimes[i].ToOADate());
-                yDoubles.Add(yMinValues[i]);
+                xDoubles.Add(lineData.dateTimes[i].ToOADate());
+                yDoubles.Add(lineData.yMinValues[i]);
 
-                xDoubles.Add(dateTimes[i].ToOADate());
-                yDoubles.Add(yMaxValues[i]);
+                xDoubles.Add(lineData.dateTimes[i].ToOADate());
+                yDoubles.Add(lineData.yMaxValues[i]);
             }
 
             var line = plot.Add.ScatterLine(xDoubles.ToArray(), yDoubles.ToArray());
-            line.Axes.YAxis = dicYAxis[lineName];
+            line.Axes.YAxis = dicYAxis[lineInfo.Name];
             line.LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor);
 
             // 曲线加入数据字典中, 便于显示和隐藏
-            if (!dicLine.ContainsKey(lineName))
+            if (!dicLine.ContainsKey(lineInfo.Name))
             {
-                dicLine.Add(lineName, line);
+                dicLine.Add(lineInfo.Name, line);
             }
             else
             {
-                dicLine[lineName] = line;
+                dicLine[lineInfo.Name] = line;
             }
         }
 
         private async Task RenderLineByNormal(LineInfo lineInfo)
         {
-            var dateTimes = new List<DateTime>();
-            var yValues = new List<double>();
-            using (var influxDBClient = new InfluxDBClient(influxDBUrl, token))
-            {
-                // TODO: 日期需要特殊处理,UTC既要带T，也要带Z
-                var startTime = dtpStart.Value.ToUniversalTime().ToString("s") + "Z";
-                var endTime = dtpEnd.Value.ToUniversalTime().ToString("s") + "Z";
+            var lineData = await InfluxDBHelper.GetTimeSeriesHistorian(dtpStart, dtpEnd, lineInfo.Name);
 
-                var flux = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
-                    $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
-                    "|> filter(fn: (r) => r[\"_field\"] == \"ivalue\" or r[\"_field\"] == \"bvalue\" or r[\"_field\"] == \"dvalue\")" + Environment.NewLine +
-                    $"|> filter(fn: (r) => r[\"name\"] == \"{lineInfo.Name}\")";
-
-                var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(flux, orgID);
-                fluxCountTable.ForEach(fluxTable =>
-                {
-                    var fluxRecords = fluxTable.Records;
-                    fluxRecords.ForEach(fluxRecord =>
-                    {
-                        DateTime.TryParse(fluxRecord.GetValueByKey("_time").ToString(), out var dateTime);
-
-                        double yValue =0;
-                        if (null != fluxRecord.GetValueByKey("_value"))
-                        {
-                            double.TryParse(fluxRecord.GetValueByKey("_value").ToString(), out yValue);
-                        }
-
-                        dateTimes.Add(dateTime);
-                        yValues.Add(yValue);
-                    });
-                });
-            }
-
-            var line = plot.Add.ScatterLine(dateTimes.ToArray(), yValues.ToArray());
+            var line = plot.Add.ScatterLine(lineData.dateTimes.ToArray(), lineData.yValues.ToArray());
             line.Color = ScottPlot.Color.FromColor(lineInfo.LineColor);
             line.LineWidth = lineInfo.LineWidth;
 
             // 曲线加入数据字典中, 便于显示和隐藏
-            var lineName = lineInfo.Name;
-            if (!dicLine.ContainsKey(lineName))
+            if (!dicLine.ContainsKey(lineInfo.Name))
             {
-                dicLine.Add(lineName, line);
+                dicLine.Add(lineInfo.Name, line);
             }
             else
             {
-                dicLine[lineName] = line;
+                dicLine[lineInfo.Name] = line;
             }
         }
 
@@ -1619,7 +1484,6 @@ namespace LineControl
                 return;
                 
             plot.SavePng(dialog.FileName, formsPlot.Width, formsPlot.Height);
-            //MessageBox.Show("图片保存成功.", "信息提示");
         }
 
         #endregion
@@ -1777,8 +1641,7 @@ namespace LineControl
 
         private void dgvLines_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
-            // 显示行号
-            e.Row.HeaderCell.Value = string.Format("{0}", e.Row.Index + 1);
+            e.Row.HeaderCell.Value = string.Format("{0}", e.Row.Index + 1); // 显示行号
         }
 
         private void dgvLines_CellClick(object sender, DataGridViewCellEventArgs e)

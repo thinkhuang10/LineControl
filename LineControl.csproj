@@ -149,7 +149,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateData.cs" />
     <Compile Include="CommonConstant.cs" />
+    <Compile Include="ConfigInfo.cs" />
+    <Compile Include="InfluxDBQueryHelper.cs" />
     <Compile Include="LineInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -170,6 +173,7 @@
     <Compile Include="SetForm.designer.cs">
       <DependentUpon>SetForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TimeSeriesData.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
