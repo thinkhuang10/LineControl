@@ -3,7 +3,6 @@ using InfluxDB.Client;
 using LineControl.Properties;
 using ScottPlot;
 using ScottPlot.AxisPanels;
-using ScottPlot.Panels;
 using ScottPlot.Plottables;
 using ScottPlot.TickGenerators;
 using ScottPlot.TickGenerators.TimeUnits;
@@ -16,7 +15,6 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Resources;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
@@ -44,7 +42,7 @@ namespace LineControl
 
         public DataTable dataTable;
 
-        private Dictionary<string, List<object>> dicLine = new Dictionary<string, List<object>>();
+        private Dictionary<string, Scatter> dicLine = new Dictionary<string, Scatter>();
 
         private Dictionary<string, LeftAxis> dicYAxis = new Dictionary<string, LeftAxis>();
 
@@ -579,107 +577,53 @@ namespace LineControl
 
         private void UserControl_Load(object sender, EventArgs e)
         {
-            InitQueryGapType();
+            InitQueryGap();
+            InitDateTime();
+
             InitPlot();
             InitPlotMenu();
-            //TestSpan();
-            InitDateTime();
+  
             InitDatatable();
-            //InitDoubleBuffer();
             SetDatatable();
-
-            #region 用于测试
-
-            isRuning = true;
-
-            // 测试1
-            //var width = formsPlot.Width;
-
-            //DateTime start = new DateTime(2024, 1, 1);
-            //double[] ys = Generate.RandomWalk(width);
-
-            //var sig = formsPlot.Plot.Add.Signal(ys);
-            //sig.Data.XOffset = start.ToOADate();
-            //sig.Data.Period = 1.0; // one day between each point
-
-            //formsPlot.Plot.Axes.DateTimeTicksBottom();
-
-            // 测试2
-            //var count = 1000;
-            //var minValues = new float[count];
-            //var maxValues = new float[count];
-            //var val = 0.0f;
-            //for (var i = 0; i < count; i++)
-            //{
-            //    minValues[i] = val;
-            //    maxValues[i] = val + 50;
-            //    val++;
-
-            //    if (val > 100)
-            //    {
-            //        val = 0;
-            //    }
-            //}
-
-            //for (int i = 0; i < count; i++)
-            //{
-            //    var time = DateTime.Now + TimeSpan.FromSeconds(i);
-            //    var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
-            //    line.LineColor = ScottPlot.Colors.Red;
-
-            //    if (i != count - 1)
-            //    {
-            //        var timeMinAndMax = time + TimeSpan.FromSeconds(1);
-            //        var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
-            //        lineMinAndMax.LineColor = ScottPlot.Colors.Red;
-            //    }
-            //}
-            //plot.Axes.DateTimeTicksBottom();
-
-            #endregion
 
             SetPlotTitle();
 
-            //// 注意函数顺序不能乱，渲染图形不正确
-            //SetPlotBackground();
-            //SetPlotGridColor();
-            //SetXAxisTick();
-            //SetYAxisTick();
-            //SetXAxisTitle();
-            //SetYAxisTitle();
-            //SetTickStyle();
-            //// SetLegend();
+            // 注意函数顺序不能乱，渲染图形不正确
+            SetPlotBackground();
+            SetPlotGridColor();
+            SetXAxisTick();
+            SetYAxisTick();
+            SetXAxisTitle();
+            SetYAxisTitle();
+            SetTickStyle();
 
-            //SetCursor();
+            SetCursor();
 
-            //RefreshPlot();
+            RefreshPlot();
 
             // 测试
-            ShowTestLine();
-
-            // MouseTracker();
-             //ShowValueOnHover();
+            //ShowTestLine();
         }
 
-        private void InitQueryGapType()
+        private void InitQueryGap()
         {
-            cbQueryGapType.SelectedIndex = 0;
-        }
+            cbQueryGapType.Items.Add("过去1分钟");
+            cbQueryGapType.Items.Add("过去5分钟");
+            cbQueryGapType.Items.Add("过去10分钟");
+            cbQueryGapType.Items.Add("过去20分钟");
+            cbQueryGapType.Items.Add("过去30分钟");
+            cbQueryGapType.Items.Add("过去1小时");
+            cbQueryGapType.Items.Add("过去6小时");
+            cbQueryGapType.Items.Add("过去8小时");
+            cbQueryGapType.Items.Add("过去12小时");
+            cbQueryGapType.Items.Add("过去24小时");
+            cbQueryGapType.Items.Add("过去2天");
+            cbQueryGapType.Items.Add("过去1周");
+            cbQueryGapType.Items.Add("过去2周");
+            cbQueryGapType.Items.Add("过去1个月");
+            cbQueryGapType.Items.Add("过去6个月");
 
-        /// <summary>
-        /// 开启双缓冲,减少表格的闪烁
-        /// </summary>
-        private void InitDoubleBuffer()
-        {
-            // 设置窗体的双缓冲
-            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint, true);
-            UpdateStyles();
-
-            // 设置表格的双缓冲
-            var type = dgvLines.GetType();
-            var pi = type.GetProperty("DoubleBuffered",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            pi.SetValue(dgvLines, true, null);
+            cbQueryGapType.SelectedItem = "过去1小时";
         }
 
         private void InitDatatable()
@@ -917,22 +861,9 @@ namespace LineControl
             }
         }
 
-        private void TestSpan()
-        {
-            var span = plot.Add.HorizontalSpan((DateTime.Now - TimeSpan.FromSeconds(60)).ToOADate(), 
-                (DateTime.Now - TimeSpan.FromSeconds(30)).ToOADate());
-
-            span.FillColor = Colors.LightYellow.WithOpacity(0.3) ;
-            span.IsDraggable = true;
-            span.IsResizable = true;
-        }
-
         private void InitDateTime()
         {
-            // TODO：测试,获取两分钟的数据
-            dtpStart.Value = DateTime.Now - TimeSpan.FromMinutes(2);
-
-            //startDtp.Value = DateTime.Now - TimeSpan.FromHours(1);
+            dtpStart.Value = DateTime.Now - TimeSpan.FromHours(1);
             dtpEnd.Value = DateTime.Now;
         }
 
@@ -1192,45 +1123,6 @@ namespace LineControl
             //plot.Axes.Left.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(saveData.axisLabelColor);
         }
 
-        private LegendPanel rightLegend;
-
-        private void SetLegend()
-        {
-            plot.HideLegend();
-            if (!saveData.isShowLegend)
-            {
-                plot.HideLegend();
-                return;
-            }
-
-            var legendItems = new List<LegendItem>();
-            foreach (var lineName in saveData.lineInfos.Keys)
-            { 
-                var lineInfo = saveData.lineInfos[lineName];
-                var item = new LegendItem()
-                {
-                    LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor),
-                    MarkerFillColor = ScottPlot.Color.FromColor(lineInfo.LineColor),
-                    MarkerLineColor = ScottPlot.Color.FromColor(lineInfo.LineColor),
-                    LineWidth = lineInfo.LineWidth,
-                    LabelText = lineName
-                };
-                legendItems.Add(item);
-            }
-
-            var panel = plot.ShowLegend(legendItems);
-            if (saveData.legendPosition == "上方")
-            {
-                panel.Alignment = Alignment.UpperCenter;
-                panel.Orientation = ScottPlot.Orientation.Horizontal;
-            }
-            else 
-            {
-                panel.Alignment = Alignment.LowerRight;
-                panel.Orientation = ScottPlot.Orientation.Vertical;
-            }
-        }
-
         private void chart_DoubleClick(object sender, EventArgs e)
         {
             var form = new SetForm(saveData);
@@ -1248,7 +1140,6 @@ namespace LineControl
             SetXAxisTitle();
             SetYAxisTitle();
             SetTickStyle();
-            //SetLegend();
 
             RefreshPlot();
         }
@@ -1266,52 +1157,45 @@ namespace LineControl
         private async void btQuery_Click(object sender, EventArgs e)
         {
             // TODO: 用于测试的曲线
-            ShowTestLine();
-
-            #region 使用时间段的方式
-
-
-
-            #endregion
+            //ShowTestLine();
 
             #region 使用起始时间和结束时间的方式
 
-            //// 实际查询曲线
+            // 实际查询曲线
             //if (!isRuning)
             //    return;
 
-            //if (dtpStart.Value > dtpEnd.Value)
-            //{
-            //    MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    return;
-            //}
+            if (dtpStart.Value > dtpEnd.Value)
+            {
+                MessageBox.Show("起始时间大于结束时间.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-            //if (saveData.lineInfos.Count == 0)
-            //    return;
+            if (saveData.lineInfos.Count == 0)
+                return;
 
-            //plot.Clear();
+            plot.Clear();
 
-            //foreach (var tagName in saveData.lineInfos.Keys)
-            //{
-            //    var lineInfo = saveData.lineInfos[tagName];
-            //    var linePointCount = await GetLinePointCount(tagName);
+            foreach (var tagName in saveData.lineInfos.Keys)
+            {
+                var lineInfo = saveData.lineInfos[tagName];
+                var linePointCount = await GetLinePointCount(tagName);
 
-            //    // 一定要等待曲线绘制完成
-            //    await RenderLines(lineInfo, linePointCount);
-            //}
+                // 一定要等待曲线绘制完成
+                await RenderLines(lineInfo, linePointCount);
+            }
 
-            //SetPlotBackground();
-            //SetPlotGridColor();
+            SetPlotBackground();
+            SetPlotGridColor();
 
-            //SetXAxisTick();
-            //SetYAxisTick();
-            //SetXAxisTitle();
-            //SetYAxisTitle();
+            SetXAxisTick();
+            SetYAxisTick();
+            SetXAxisTitle();
+            SetYAxisTitle();
 
-            //SetTickStyle();
-            //SetLegend();
+            SetTickStyle();
 
-            //RefreshPlot();
+            RefreshPlot();
 
             #endregion
         }
@@ -1336,7 +1220,6 @@ namespace LineControl
             SetYAxisTitle();
 
             SetTickStyle();
-            //SetLegend();
 
             SetCursor();
 
@@ -1363,14 +1246,6 @@ namespace LineControl
 
             // 添加曲线1
             var lineName = "Tag3";
-            if (!dicLine.ContainsKey(lineName))
-            {
-                dicLine.Add(lineName, new List<object>());
-            }
-            else
-            {
-                dicLine[lineName] = new List<object>();
-            }
 
             var xDoubles = new List<double>();
             var yDoubles = new List<double>();
@@ -1387,7 +1262,15 @@ namespace LineControl
             var line = plot.Add.ScatterLine(xDoubles.ToArray(), yDoubles.ToArray());
             line.Axes.YAxis = dicYAxis[lineName];
             line.LineColor = ScottPlot.Colors.Green;
-            dicLine[lineName].Add(line);
+
+            if (!dicLine.ContainsKey(lineName))
+            {
+                dicLine.Add(lineName, line);
+            }
+            else
+            {
+                dicLine[lineName] = line;
+            }
 
             MyScatter = line;
         }
@@ -1412,14 +1295,6 @@ namespace LineControl
 
             // 添加曲线7
             var lineName = "Tag7";
-            if (!dicLine.ContainsKey(lineName))
-            {
-                dicLine.Add(lineName, new List<object>());
-            }
-            else
-            {
-                dicLine[lineName] = new List<object>();
-            }
 
             var xDoubles = new List<double>();
             var yDoubles = new List<double>();
@@ -1433,118 +1308,17 @@ namespace LineControl
                 yDoubles.Add(maxValues[i]);
             }
 
-            var line = plot.Add.SignalXY(xDoubles.ToArray(), yDoubles.ToArray());
+            var line = plot.Add.ScatterLine(xDoubles.ToArray(), yDoubles.ToArray());
             line.Axes.YAxis = dicYAxis[lineName];
             line.LineColor = ScottPlot.Colors.Red;
-            dicLine[lineName].Add(line);
-        }
 
-        private void TestLine1()
-        {
-            var count = 1000;
-            var minValues = new float[count];
-            var maxValues = new float[count];
-            var val = -15.0f;
-            for (var i = 0; i < count; i++)
+            if (!dicLine.ContainsKey(lineName))
             {
-                minValues[i] = val;
-                maxValues[i] = val + 1;
-                val++;
-
-                if (val > 15)
-                {
-                    val = -15;
-                }
-            }
-
-            
-            var lineName1 = "Tag3";
-
-            // 添加Y轴1
-            //dicYAxis.Add(lineName1, plot.Axes.AddLeftAxis());
-            
-            // 添加曲线1
-            if (!dicLine.ContainsKey(lineName1))
-            {
-                dicLine.Add(lineName1, new List<object>());
+                dicLine.Add(lineName, line);
             }
             else
             {
-                dicLine[lineName1] = new List<object>();
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                var time = dtpStart.Value + TimeSpan.FromSeconds(i);
-                var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
-                line.LineColor = ScottPlot.Colors.Green;
-
-                line.Axes.YAxis = dicYAxis[lineName1]; // custom Y axis
-                dicLine[lineName1].Add(line);
-
-                if (i != count - 1)
-                {
-                    var timeMinAndMax = time + TimeSpan.FromSeconds(1);
-                    var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
-                    lineMinAndMax.LineColor = ScottPlot.Colors.Green;
-
-                    lineMinAndMax.Axes.YAxis = dicYAxis[lineName1]; // custom Y axis
-                    dicLine[lineName1].Add(lineMinAndMax);
-                }
-            }
-        }
-
-        private void TestLine2()
-        {
-            var count = 1000;
-            var minValues = new float[count];
-            var maxValues = new float[count];
-            var val = 120.0f;
-            for (var i = 0; i < count; i++)
-            {
-                minValues[i] = val;
-                maxValues[i] = val + 1;
-                val++;
-
-                if (val > 180)
-                {
-                    val = 120;
-                }
-            }
-
-            var lineName1 = "Tag7";
-
-            // 添加Y轴7
-            //dicYAxis.Add(lineName1, plot.Axes.AddLeftAxis());
-
-            // 添加曲线7
-            if (!dicLine.ContainsKey(lineName1))
-            {
-                dicLine.Add(lineName1, new List<object>());
-            }
-            else
-            {
-                dicLine[lineName1] = new List<object>();
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                var time = dtpStart.Value + TimeSpan.FromSeconds(i);
-                var line = plot.Add.Line(time.ToOADate(), minValues[i], time.ToOADate(), maxValues[i]);
-                line.LineColor = ScottPlot.Colors.Red;
-
-                line.Axes.YAxis = dicYAxis[lineName1]; // custom Y axis
-                dicLine[lineName1].Add(line);
-
-                if (i != count - 1)
-                {
-                    var timeMinAndMax = time + TimeSpan.FromSeconds(1);
-                    var lineMinAndMax = plot.Add.Line(time.ToOADate(), maxValues[i], timeMinAndMax.ToOADate(), minValues[i + 1]);
-                    lineMinAndMax.LineColor = ScottPlot.Colors.Red;
-
-                    lineMinAndMax.Axes.YAxis = dicYAxis[lineName1]; // custom Y axis
-                    dicLine[lineName1].Add(lineMinAndMax);
-                }
+                dicLine[lineName] = line;
             }
         }
 
@@ -1555,7 +1329,7 @@ namespace LineControl
             {
                 var totalSeconds = (dtpEnd.Value - dtpStart.Value).TotalSeconds;
                 var gapSecond = ((int)totalSeconds) / plotWidth;
-                await RenderLineByOptimize(lineInfo.Name, gapSecond, lineInfo);
+                await RenderLineByOptimize(lineInfo, gapSecond);
             }
             else
             {
@@ -1593,8 +1367,10 @@ namespace LineControl
             return count;
         }
 
-        private async Task RenderLineByOptimize(string tagName, double gapSecond,LineInfo lineInfo)
+        private async Task RenderLineByOptimize(LineInfo lineInfo, double gapSecond)
         {
+            string lineName = lineInfo.Name;
+
             var dateTimes = new List<DateTime>();
             var yMaxValues = new List<double>();
             var yMinValues = new List<double>();
@@ -1608,7 +1384,7 @@ namespace LineControl
                 var fluxMax = $"from(bucket: \"RealTime_{projectGuid}\")" + Environment.NewLine +
                     $"|> range(start: {startTime}, stop: {endTime})" + Environment.NewLine +
                     "|> filter(fn: (r) => r[\"_field\"] == \"ivalue\" or r[\"_field\"] == \"bvalue\" or r[\"_field\"] == \"dvalue\")" + Environment.NewLine +
-                    $"|> filter(fn: (r) => r[\"name\"] == \"{tagName}\")" + Environment.NewLine +
+                    $"|> filter(fn: (r) => r[\"name\"] == \"{lineName}\")" + Environment.NewLine +
                     $"|> aggregateWindow(every: {gapSecond}s, fn: max)";
 
                 var fluxCountTable = await influxDBClient.GetQueryApi().QueryAsync(fluxMax, orgID);
@@ -1656,36 +1432,29 @@ namespace LineControl
                 });
             }
 
-            // 清空曲线重新添加
-            if (!dicLine.ContainsKey(tagName))
+            var xDoubles = new List<double>();
+            var yDoubles = new List<double>();
+            for (int i = 0; i < dateTimes.Count; i++)
             {
-                dicLine.Add(tagName, new List<object>());
+                xDoubles.Add(dateTimes[i].ToOADate());
+                yDoubles.Add(yMinValues[i]);
+
+                xDoubles.Add(dateTimes[i].ToOADate());
+                yDoubles.Add(yMaxValues[i]);
+            }
+
+            var line = plot.Add.ScatterLine(xDoubles.ToArray(), yDoubles.ToArray());
+            line.Axes.YAxis = dicYAxis[lineName];
+            line.LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor);
+
+            // 曲线加入数据字典中, 便于显示和隐藏
+            if (!dicLine.ContainsKey(lineName))
+            {
+                dicLine.Add(lineName, line);
             }
             else
             {
-                dicLine[tagName] = new List<object>();
-            }
-
-            var count = dateTimes.Count;
-            for (var i = 0; i < count; i++)
-            {
-                var line = plot.Add.Line(dateTimes[i].ToOADate(), yMinValues[i], 
-                    dateTimes[i].ToOADate(), yMaxValues[i]);
-                line.LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor);
-                line.LineWidth = lineInfo.LineWidth;
-
-                dicLine[tagName].Add(line); // 添加到字典中便于显示和隐藏
-
-                if (i != count - 1)
-                {
-                    var lineMinAndMax = plot.Add.Line(dateTimes[i].ToOADate(), yMaxValues[i], 
-                        dateTimes[i+1].ToOADate(), yMinValues[i + 1]);
-                    lineMinAndMax.LineColor = ScottPlot.Color.FromColor(lineInfo.LineColor);
-                    lineMinAndMax.LineWidth = lineInfo.LineWidth;
-
-                    dicLine[tagName].Add(lineMinAndMax);// 添加到字典中便于显示和隐藏
-                }
-
+                dicLine[lineName] = line;
             }
         }
 
@@ -1732,13 +1501,12 @@ namespace LineControl
             var lineName = lineInfo.Name;
             if (!dicLine.ContainsKey(lineName))
             {
-                dicLine.Add(lineName, new List<object>());
+                dicLine.Add(lineName, line);
             }
             else
             {
-                dicLine[lineName] = new List<object>();
+                dicLine[lineName] = line;
             }
-            dicLine[lineInfo.Name].Add(line);
         }
 
         #endregion
@@ -1997,32 +1765,11 @@ namespace LineControl
 
             if (dicLine.ContainsKey(lineName))
             {
-                foreach (var item in dicLine[lineName])
-                {
-                    // 判断是否为LinePlot
-                    var linePlot = item as LinePlot;
-                    if (null != linePlot)
-                    {
-                        if (isChecked)
-                            linePlot.IsVisible = false;
-                        else
-                            linePlot.IsVisible = true;
-
-                        continue;
-                    }
-
-                    // 判断是否为Scatter
-                    var scatter = item as Scatter;
-                    if (null != scatter)
-                    {
-                        if (isChecked)
-                            scatter.IsVisible = false;
-                        else
-                            scatter.IsVisible = true;
-
-                        continue;
-                    }
-                }
+                var scatter = dicLine[lineName];
+                if (isChecked)
+                    scatter.IsVisible = false;
+                else
+                    scatter.IsVisible = true;
 
                 formsPlot.Refresh();
             }
@@ -2112,5 +1859,41 @@ namespace LineControl
 
         #endregion
 
+        private void cbQueryGapType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var item = cbQueryGapType.SelectedItem.ToString();
+            if ("过去1分钟" == item)
+                dtpStart.Value = DateTime.Now.AddMinutes(-1);
+            else if ("过去5分钟" == item)
+                dtpStart.Value = DateTime.Now.AddMinutes(-5);
+            else if ("过去10分钟" == item)
+                dtpStart.Value = DateTime.Now.AddMinutes(-10);
+            else if ("过去20分钟" == item)
+                dtpStart.Value = DateTime.Now.AddMinutes(-20);
+            else if ("过去30分钟" == item)
+                dtpStart.Value = DateTime.Now.AddMinutes(-30);
+            else if ("过去1小时" == item)
+                dtpStart.Value = DateTime.Now.AddHours(-1);
+            else if ("过去6小时" == item)
+                dtpStart.Value = DateTime.Now.AddHours(-6);
+            else if ("过去8小时" == item)
+                dtpStart.Value = DateTime.Now.AddHours(-8);
+            else if ("过去12小时" == item)
+                dtpStart.Value = DateTime.Now.AddHours(-12);
+            else if ("过去24小时" == item)
+                dtpStart.Value = DateTime.Now.AddHours(-24);
+            else if ("过去2天" == item)
+                dtpStart.Value = DateTime.Now.AddDays(-2);
+            else if ("过去1周" == item)
+                dtpStart.Value = DateTime.Now.AddDays(-7);
+            else if ("过去2周" == item)
+                dtpStart.Value = DateTime.Now.AddDays(-14);
+            else if ("过去1个月" == item)
+                dtpStart.Value = DateTime.Now.AddMonths(-1);
+            else if ("过去6个月" == item)
+                dtpStart.Value = DateTime.Now.AddMonths(-6);
+
+            dtpEnd.Value = DateTime.Now;
+        }
     }
 }
