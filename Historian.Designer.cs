@@ -29,15 +29,13 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Historian));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FrameTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.panelChart = new System.Windows.Forms.Panel();
             this.panelQuery = new System.Windows.Forms.Panel();
-            this.labelTest = new System.Windows.Forms.Label();
             this.cbQueryGapType = new System.Windows.Forms.ComboBox();
-            this.btRefresh = new System.Windows.Forms.Button();
             this.btPanningDown = new System.Windows.Forms.Button();
             this.btPanningUp = new System.Windows.Forms.Button();
             this.btPanningRight = new System.Windows.Forms.Button();
@@ -89,9 +87,7 @@
             // 
             // panelQuery
             // 
-            this.panelQuery.Controls.Add(this.labelTest);
             this.panelQuery.Controls.Add(this.cbQueryGapType);
-            this.panelQuery.Controls.Add(this.btRefresh);
             this.panelQuery.Controls.Add(this.btPanningDown);
             this.panelQuery.Controls.Add(this.btPanningUp);
             this.panelQuery.Controls.Add(this.btPanningRight);
@@ -112,16 +108,6 @@
             this.panelQuery.Size = new System.Drawing.Size(1000, 34);
             this.panelQuery.TabIndex = 1;
             // 
-            // labelTest
-            // 
-            this.labelTest.AutoSize = true;
-            this.labelTest.Location = new System.Drawing.Point(909, 11);
-            this.labelTest.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelTest.Name = "labelTest";
-            this.labelTest.Size = new System.Drawing.Size(41, 12);
-            this.labelTest.TabIndex = 16;
-            this.labelTest.Text = "label1";
-            // 
             // cbQueryGapType
             // 
             this.cbQueryGapType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -132,19 +118,6 @@
             this.cbQueryGapType.Size = new System.Drawing.Size(93, 20);
             this.cbQueryGapType.TabIndex = 15;
             this.cbQueryGapType.SelectedIndexChanged += new System.EventHandler(this.cbQueryGapType_SelectedIndexChanged);
-            // 
-            // btRefresh
-            // 
-            this.btRefresh.Location = new System.Drawing.Point(956, 6);
-            this.btRefresh.Margin = new System.Windows.Forms.Padding(2);
-            this.btRefresh.Name = "btRefresh";
-            this.btRefresh.Size = new System.Drawing.Size(35, 22);
-            this.btRefresh.TabIndex = 13;
-            this.btRefresh.Text = "刷新";
-            this.btRefresh.UseVisualStyleBackColor = true;
-            this.btRefresh.Visible = false;
-            this.btRefresh.Click += new System.EventHandler(this.btRefresh_Click);
-            this.btRefresh.MouseEnter += new System.EventHandler(this.btRefresh_MouseEnter);
             // 
             // btPanningDown
             // 
@@ -323,31 +296,31 @@
             this.dgvLines.AllowUserToAddRows = false;
             this.dgvLines.AllowUserToDeleteRows = false;
             this.dgvLines.AllowUserToResizeRows = false;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvLines.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvLines.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvLines.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvLines.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvLines.Location = new System.Drawing.Point(0, 0);
             this.dgvLines.Margin = new System.Windows.Forms.Padding(2);
             this.dgvLines.MultiSelect = false;
             this.dgvLines.Name = "dgvLines";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvLines.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvLines.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dgvLines.RowHeadersWidth = 62;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dgvLines.RowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvLines.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.dgvLines.RowTemplate.Height = 28;
             this.dgvLines.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvLines.Size = new System.Drawing.Size(1000, 110);
@@ -369,7 +342,6 @@
             this.Load += new System.EventHandler(this.UserControl_Load);
             this.FrameTableLayoutPanel.ResumeLayout(false);
             this.panelQuery.ResumeLayout(false);
-            this.panelQuery.PerformLayout();
             this.splitContainerFrame.Panel1.ResumeLayout(false);
             this.splitContainerFrame.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerFrame)).EndInit();
@@ -397,10 +369,8 @@
         private System.Windows.Forms.Button btPanningUp;
         private System.Windows.Forms.Button btPanningRight;
         private System.Windows.Forms.Button btPanningLeft;
-        private System.Windows.Forms.Button btRefresh;
         private System.Windows.Forms.SplitContainer splitContainerFrame;
         private System.Windows.Forms.DataGridView dgvLines;
         private System.Windows.Forms.ComboBox cbQueryGapType;
-        private System.Windows.Forms.Label labelTest;
     }
 }

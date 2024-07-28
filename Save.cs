@@ -13,8 +13,8 @@ namespace LineControl
         // 曲线背景色
         public Color chartBackColor = Color.Gray;
 
-        // 设置X轴和Y轴的标注颜色
-        public Color axisLabelColor = Color.Red;
+        // 设置X轴标注颜色
+        public Color axisLabelColor = Color.Black;
 
         // 网格颜色
         public Color gridColor = Color.White;
@@ -72,7 +72,7 @@ namespace LineControl
         // TODO：方便测试
         public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>() {
             {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Green, LineWidth =1} },
-            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = 100, UpperLimitValue = 200, LineColor = Color.Red, LineWidth =1} }
+            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -30, UpperLimitValue = 30, LineColor = Color.Red, LineWidth =1} }
         };
     }
 }
