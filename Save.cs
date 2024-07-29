@@ -25,7 +25,7 @@ namespace LineControl
         // 垂直网格数
         public int horizonalGridCount = 5;
 
-        // 设置标题
+        // 设置曲线标题
         public string chartTitle = "";
 
         public Color chartTitleColor = Color.Black;
@@ -52,27 +52,28 @@ namespace LineControl
 
         public bool yAxisTitleIsBold = false;
 
-        // 设置标注
-        public bool isShowLegend = true;
-
-        public string legendPosition = "上方";
-
+        // 设置表格的列
         public List<string> AllColumns = new List<string>() {
-            CommonConstant.ColumnHeaderLineShow,CommonConstant.ColumnHeaderLineColor,
-            CommonConstant.ColumnHeaderLineName,
-            CommonConstant.ColumnHeaderLineDescription,
+            CommonConstant.ColumnHeaderLineShow, CommonConstant.ColumnHeaderLineColor,
+            CommonConstant.ColumnHeaderLineName, CommonConstant.ColumnHeaderLineDescription,
             CommonConstant.ColumnHeaderLineValue, CommonConstant.ColumnHeaderLineUnit,
-            CommonConstant.ColumnHeaderLowerLimit,
-            CommonConstant.ColumnHeaderUpperLimit
+            CommonConstant.ColumnHeaderLowerLimit, CommonConstant.ColumnHeaderUpperLimit,
+            CommonConstant.ColumnHeaderDecimal,CommonConstant.ColumnLineWidth
         };
+
+        // 游标
+        public Color cursorColor = Color.Blue;
+
+        public int cursorFontSize = 12;
 
         // 是否单轴显示
         public bool isSingleAxisShow = true;
 
         // TODO：方便测试
         public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>() {
-            {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Green, LineWidth =1} },
-            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -30, UpperLimitValue = 30, LineColor = Color.Red, LineWidth =1} }
+            {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Green, LineWidth =1,Decimal = 2,Unit ="摄氏度",Description="环境温度"} },
+            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -30, UpperLimitValue = 30, LineColor = Color.Red, LineWidth =1,Decimal = 2, Unit ="安培",Description = "当前电流"} }
         };
+
     }
 }

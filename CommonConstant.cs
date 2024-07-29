@@ -18,5 +18,9 @@ namespace LineControl
         public const string ColumnHeaderLowerLimit = "量程下限";
 
         public const string ColumnHeaderUpperLimit = "量程上限";
+
+        public const string ColumnHeaderDecimal = "小数位数";
+
+        public const string ColumnLineWidth = "曲线宽度";
     }
 }

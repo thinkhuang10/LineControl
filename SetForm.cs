@@ -40,8 +40,12 @@ namespace LineControl
             YAxisTitleForeColor.BackColor = saveData.yAxisTitleForeColor;
             YAxisTitleSize.Text = saveData.yAxisTitleSize.ToString();
 
-            checkBoxLegend.Checked = saveData.isShowLegend;
-            comboBoxLegend.SelectedItem = saveData.legendPosition;
+            // 游标
+            CursorColor.BackColor = saveData.cursorColor;
+            CursorFontSize.Text = saveData.cursorFontSize.ToString();
+
+            // 设置
+            checkBoxSingleAxis.Checked = saveData.isSingleAxisShow;
 
             // 初始化曲线
             listBoxVar.Items.Clear();
@@ -92,6 +96,13 @@ namespace LineControl
                 return;
             }
 
+            if (!int.TryParse(CursorFontSize.Text.Trim(), out int cursorFontSize)
+                || cursorFontSize <= 0)
+            {
+                MessageBox.Show("请输入正确的游标字体大小.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             #endregion
 
             #region 保存配置到序列化文件中
@@ -116,8 +127,12 @@ namespace LineControl
             saveData.yAxisTitleForeColor = YAxisTitleForeColor.BackColor;
             saveData.yAxisTitleSize = yAxisTitleSize;
 
-            saveData.isShowLegend = checkBoxLegend.Checked;
-            saveData.legendPosition = comboBoxLegend.SelectedItem.ToString();
+            // 游标
+            saveData.cursorColor = CursorColor.BackColor;
+            saveData.cursorFontSize = cursorFontSize;
+
+            // 设置
+            saveData.isSingleAxisShow = checkBoxSingleAxis.Checked;
 
             //saveData.lineInfos.Clear();
 
@@ -305,6 +320,14 @@ namespace LineControl
             lineInfo.Unit = tbUnit.Text;
 
             lbModifyLineTooltip.Visible = true;
+        }
+
+        private void CursorColor_Click(object sender, EventArgs e)
+        {
+            if (colorDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            CursorColor.BackColor = colorDialog.Color;
         }
     }
 }
