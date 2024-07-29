@@ -568,6 +568,9 @@ namespace LineControl
 
         private void UserControl_Load(object sender, EventArgs e)
         {
+            // 调试状态
+            isRuning = true;
+
             InitQueryInterval();
             InitQueryTime();
 
@@ -936,8 +939,8 @@ namespace LineControl
             SetXAxisTick();
             SetYAxisTick();
 
-            await ShowLines();
-            //ShowTestLine();
+            //await ShowLines();
+            ShowTestLine();
 
             SetXAxisTitle();
             SetYAxisTitle();
@@ -1315,6 +1318,34 @@ namespace LineControl
 
         #region 曲线设置
 
+        private void btChangeAxisType_Click(object sender, EventArgs e)
+        {
+            saveData.isSingleAxisShow = !saveData.isSingleAxisShow;
+
+            if (saveData.isSingleAxisShow)
+            {
+                btChangeAxisType.BackgroundImage = Resources.Line_single;
+
+                foreach (var item in dicLeftAxis.Values)
+                {
+                    item.IsVisible = false;
+                }
+
+                dicLeftAxis.FirstOrDefault().Value.IsVisible = true;
+            }
+            else
+            {
+                btChangeAxisType.BackgroundImage = Resources.Line_multiple;
+
+                foreach (var item in dicLeftAxis.Values)
+                {
+                    item.IsVisible = true;
+                }
+            }
+
+            RefreshPlot();
+        }
+
         private void btSetting_Click(object sender, EventArgs e)
         {
             PopupConfiguration();
@@ -1680,8 +1711,14 @@ namespace LineControl
             toolTip.SetToolTip(btSetting, "设置");
         }
 
-        #endregion
+        private void btChangeAxisType_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btChangeAxisType, "单/多轴切换");
+        }
 
+        #endregion
 
         #region 调试
 
