@@ -43,15 +43,6 @@ namespace LineControl
 
         public bool xAxisTitleIsBold = false;
 
-        // 设置Y轴
-        public string yAxisTitle = "";
-
-        public Color yAxisTitleForeColor = Color.Black;
-
-        public float yAxisTitleSize = 10.0f;
-
-        public bool yAxisTitleIsBold = false;
-
         // 设置表格的列
         public List<string> AllColumns = new List<string>() {
             CommonConstant.ColumnHeaderLineShow, CommonConstant.ColumnHeaderLineColor,
@@ -67,12 +58,14 @@ namespace LineControl
         public int cursorFontSize = 12;
 
         // 是否单轴显示
-        public bool isSingleAxisShow = true;
+        public bool isSingleAxisShow = false;
 
         // TODO：方便测试
+        //public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>();
+
         public Dictionary<string, LineInfo> lineInfos = new Dictionary<string, LineInfo>() {
-            {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Green, LineWidth =1,Decimal = 2,Unit ="摄氏度",Description="环境温度"} },
-            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -30, UpperLimitValue = 30, LineColor = Color.Red, LineWidth =1,Decimal = 2, Unit ="安培",Description = "当前电流"} }
+            {"Tag3", new LineInfo(){ Name="Tag3", LowerLimitValue = -20, UpperLimitValue = 20, LineColor = Color.Green, LineWidth =1,Decimal = 2,Unit ="摄氏度",Description="环境温度",YLabel =""} },
+            {"Tag7", new LineInfo(){ Name="Tag7", LowerLimitValue = -30, UpperLimitValue = 30, LineColor = Color.Red, LineWidth =1,Decimal = 2, Unit ="安培",Description = "当前电流",YLabel=""} }
         };
 
     }

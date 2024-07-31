@@ -152,6 +152,7 @@
     <Compile Include="AggregateData.cs" />
     <Compile Include="CommonConstant.cs" />
     <Compile Include="ConfigInfo.cs" />
+    <Compile Include="ExceptionHandle.cs" />
     <Compile Include="InfluxDBQueryHelper.cs" />
     <Compile Include="LineInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

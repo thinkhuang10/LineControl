@@ -21,5 +21,7 @@ namespace LineControl
         public double UpperLimitValue { set; get; } = 100;
 
         public int Decimal { set; get; } = 2;
+
+        public string YLabel { set; get; } = string.Empty;
     }
 }

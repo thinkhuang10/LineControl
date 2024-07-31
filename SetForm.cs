@@ -36,10 +36,6 @@ namespace LineControl
             XAxisTitleForeColor.BackColor = saveData.xAxisTitleForeColor;
             XAxisTitleSize.Text = saveData.xAxisTitleSize.ToString();
 
-            YAxisTitle.Text = saveData.yAxisTitle;
-            YAxisTitleForeColor.BackColor = saveData.yAxisTitleForeColor;
-            YAxisTitleSize.Text = saveData.yAxisTitleSize.ToString();
-
             // 游标
             CursorColor.BackColor = saveData.cursorColor;
             CursorFontSize.Text = saveData.cursorFontSize.ToString();
@@ -89,13 +85,6 @@ namespace LineControl
                 return;
             }
 
-            if (!int.TryParse(YAxisTitleSize.Text.Trim(), out int yAxisTitleSize)
-                || yAxisTitleSize <= 0)
-            {
-                MessageBox.Show("请输入正确的Y信息字体大小.", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             if (!int.TryParse(CursorFontSize.Text.Trim(), out int cursorFontSize)
                 || cursorFontSize <= 0)
             {
@@ -122,10 +111,6 @@ namespace LineControl
             saveData.xAxisTitle = XAxisTitle.Text.Trim();
             saveData.xAxisTitleForeColor = XAxisTitleForeColor.BackColor;
             saveData.xAxisTitleSize = xAxisTitleSize;
-
-            saveData.yAxisTitle = YAxisTitle.Text.Trim();
-            saveData.yAxisTitleForeColor = YAxisTitleForeColor.BackColor;
-            saveData.yAxisTitleSize = yAxisTitleSize;
 
             // 游标
             saveData.cursorColor = CursorColor.BackColor;
@@ -194,14 +179,6 @@ namespace LineControl
                 return;
 
             XAxisTitleForeColor.BackColor = colorDialog.Color;
-        }
-
-        private void YAxisTitleForeColor_Click(object sender, EventArgs e)
-        {
-            if (colorDialog.ShowDialog() != DialogResult.OK)
-                return;
-
-            YAxisTitleForeColor.BackColor = colorDialog.Color;
         }
 
         #endregion

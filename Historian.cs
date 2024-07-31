@@ -2,6 +2,7 @@
 using LineControl.Properties;
 using ScottPlot;
 using ScottPlot.AxisPanels;
+using ScottPlot.Control;
 using ScottPlot.Plottables;
 using ScottPlot.TickGenerators;
 using ScottPlot.TickGenerators.TimeUnits;
@@ -23,6 +24,7 @@ namespace LineControl
 {
     public partial class Historian: UserControl, IDCCEControl
     {
+
         #region 变量定义
 
         private readonly FormsPlot formsPlot = new FormsPlot() { Dock = DockStyle.Fill };
@@ -571,8 +573,10 @@ namespace LineControl
             // 调试状态
             isRuning = true;
 
+            // 添加全局异常捕获, 避免程序崩溃
+            ExceptionHandle.InitGlobalException();
+
             InitQueryInterval();
-            InitQueryTime();
 
             InitPlot();
             InitPlotMenu();
@@ -585,11 +589,10 @@ namespace LineControl
             // 注意函数顺序不能乱，渲染图形不正确
             SetPlotBackground();
             SetPlotGridColor();
-            SetXAxisTick();
-            SetYAxisTick();
+            SetXAxis();
+            SetYAxis();
             SetXAxisTitle();
             SetYAxisTitle();
-            SetXTickStyle();
 
             SetCursor();
 
@@ -607,28 +610,23 @@ namespace LineControl
 
             // 屏蔽ScottPlot自带的双击显示
             // 同时屏蔽掉放大,缩小，左右移动等操作
-            formsPlot.Interaction.Disable();
+            //formsPlot.Interaction.Disable();
 
-            // 屏蔽ScottPlot自带的双击显示
-            //PlotActions customActions = PlotActions.Standard();
-
-            //customActions.ToggleBenchmark = delegate { };
-
-            //customActions.PanLeft = delegate { };
-            //customActions.PanRight = delegate { };
-            //customActions.PanUp = delegate { };
-            //customActions.PanDown = delegate { };
-
-            //customActions.DragPan = delegate { };
-
-            //customActions.DragZoom = delegate { };
-            //customActions.DragZoomRectangle = delegate { };
-            //customActions.ZoomRectangleClear = delegate { };
-            //customActions.AutoScale = delegate { };
-            //customActions.ZoomIn = delegate { };
-            //customActions.ZoomOut = delegate { };
-
-            //formsPlot.Interaction.Enable(customActions);
+            // 自定义屏蔽ScottPlot自带的一些功能
+            PlotActions customActions = PlotActions.Standard();
+            customActions.ToggleBenchmark = delegate { };
+            customActions.PanLeft = delegate { };
+            customActions.PanRight = delegate { };
+            customActions.PanUp = delegate { };
+            customActions.PanDown = delegate { };
+            customActions.DragPan = delegate { };
+            customActions.DragZoom = delegate { };
+            customActions.DragZoomRectangle = delegate { };
+            customActions.ZoomRectangleClear = delegate { };
+            customActions.AutoScale = delegate { };
+            customActions.ZoomIn = delegate { };
+            customActions.ZoomOut = delegate { };
+            formsPlot.Interaction.Enable(customActions);
         }
 
         private void InitPlotMenu()
@@ -685,9 +683,16 @@ namespace LineControl
         /// </summary>
         private void SetYAxisTitle()
         {
-            plot.Axes.Left.Label.Text = saveData.yAxisTitle;
-            plot.Axes.Left.Label.ForeColor = ScottPlot.Color.FromColor(saveData.yAxisTitleForeColor);
-            plot.Axes.Left.Label.FontSize = saveData.yAxisTitleSize;
+            foreach (var lineName in dicLeftAxis.Keys)
+            {
+                if (!saveData.lineInfos.ContainsKey(lineName))
+                    return;
+
+                var lineInfo = saveData.lineInfos[lineName];
+
+                var leftAxis = dicLeftAxis[lineName];
+                leftAxis.LabelText = lineInfo.YLabel;
+            }
         }
 
         /// <summary>
@@ -710,9 +715,8 @@ namespace LineControl
 
         /// <summary>
         /// 设置X轴网格间隔
-        /// 特殊处理：添加曲线，为了在非运行状态下画出X轴
         /// </summary>
-        private void SetXAxisTick()
+        private void SetXAxis()
         {
             // 自动化分割网格
             var startTime = dtpStart.Value;
@@ -734,15 +738,42 @@ namespace LineControl
                     ticks[i] = new Tick(ticks[i].Position, label);
                 }
             };
+
+            // 设置轴颜色
+            plot.Axes.Bottom.MinorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Bottom.MajorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Bottom.FrameLineStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+            plot.Axes.Bottom.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(saveData.axisLabelColor);
         }
 
         /// <summary>
         /// 设置Y轴网格间隔
         /// 没有设置曲线,Y轴最大最小范围为0~100
         /// </summary>
-        private void SetYAxisTick()
+        private void SetYAxis()
         {
             plot.Axes.Remove(Edge.Left);
+
+            // 如果没有绑定曲线,则显示默认轴
+            if (0 == dgvLines.Rows.Count)
+            {
+                var leftAxis = plot.Axes.AddLeftAxis();
+                leftAxis.TickGenerator = new NumericAutomatic
+                {
+                    TargetTickCount = saveData.horizonalGridCount,
+                };
+
+                leftAxis.MinorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+                leftAxis.MajorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+                leftAxis.FrameLineStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+                leftAxis.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(saveData.axisLabelColor);
+
+                leftAxis.Min = 0;
+                leftAxis.Max = 100;
+
+                return;
+            }
+
             for (var i = 0; i < dgvLines.Rows.Count; i++)
             {
                 var lineName = dgvLines.Rows[i].Cells[CommonConstant.ColumnHeaderLineName].Value.ToString();
@@ -786,19 +817,9 @@ namespace LineControl
                     item.IsVisible = false;  
                 }
 
-                dicLeftAxis.FirstOrDefault().Value.IsVisible = true;
+                if(null!= dicLeftAxis.FirstOrDefault().Value)
+                    dicLeftAxis.FirstOrDefault().Value.IsVisible = true;
             }
-        }
-
-        /// <summary>
-        /// 设置X轴标注颜色
-        /// </summary>
-        private void SetXTickStyle()
-        {
-            plot.Axes.Bottom.MinorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
-            plot.Axes.Bottom.MajorTickStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
-            plot.Axes.Bottom.FrameLineStyle.Color = ScottPlot.Color.FromColor(saveData.axisLabelColor);
-            plot.Axes.Bottom.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(saveData.axisLabelColor);
         }
 
         private void RefreshPlot()
@@ -861,12 +882,20 @@ namespace LineControl
                 foreach (var lineName in dicLine.Keys)
                 {
                     var lineInfo = dicLine[lineName];
-                    var nearest = lineInfo.Data.GetNearestX(mouseLocation, formsPlot.Plot.LastRender);
-                    if (nearest.IsReal)
+                    try
                     {
-                        var val = Math.Round(nearest.Y, saveData.lineInfos[lineName].Decimal);
-                        dataTable.Rows[count][CommonConstant.ColumnHeaderLineValue] = val;
+                        var nearest = lineInfo.Data.GetNearestX(mouseLocation, formsPlot.Plot.LastRender);
+                        if (nearest.IsReal)
+                        {
+                            var val = Math.Round(nearest.Y, saveData.lineInfos[lineName].Decimal);
+                            dataTable.Rows[count][CommonConstant.ColumnHeaderLineValue] = val;
+                        }
                     }
+                    catch
+                    { 
+                    
+                    }
+
                     count++;
                 }
             }
@@ -936,16 +965,14 @@ namespace LineControl
             SetPlotGridColor();
 
             // 注意顺序非常重要,先画轴，才能保证正确的上下偏移
-            SetXAxisTick();
-            SetYAxisTick();
+            SetXAxis();
+            SetYAxis();
 
             //await ShowLines();
             ShowTestLine();
 
             SetXAxisTitle();
             SetYAxisTitle();
-
-            SetXTickStyle();
 
             SetCursor();
 
@@ -1322,6 +1349,10 @@ namespace LineControl
         {
             saveData.isSingleAxisShow = !saveData.isSingleAxisShow;
 
+            // 不存在轴, 则直接退出
+            if (dicLeftAxis.Count <= 0)
+                return;
+
             if (saveData.isSingleAxisShow)
             {
                 btChangeAxisType.BackgroundImage = Resources.Line_single;
@@ -1360,14 +1391,13 @@ namespace LineControl
 
             SetPlotTitle();
 
-            // 注意函数顺序不能乱，渲染图形不正确
+            // 注意函数顺序不能乱, 渲染图形不正确
             SetPlotBackground();
             SetPlotGridColor();
-            SetXAxisTick();
-            SetYAxisTick();
+            SetXAxis();
+            SetYAxis();
             SetXAxisTitle();
             SetYAxisTitle();
-            SetXTickStyle();
 
             RefreshPlot();
         }
@@ -1427,7 +1457,6 @@ namespace LineControl
             dgvLines.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
             dgvLines.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Black;
         }
-
 
         private void SetDataTable()
         {
@@ -1543,63 +1572,43 @@ namespace LineControl
 
         private void InitQueryInterval()
         {
-            cbQueryInterval.Items.Add("过去1分钟");
-            cbQueryInterval.Items.Add("过去5分钟");
-            cbQueryInterval.Items.Add("过去10分钟");
-            cbQueryInterval.Items.Add("过去20分钟");
-            cbQueryInterval.Items.Add("过去30分钟");
-            cbQueryInterval.Items.Add("过去1小时");
-            cbQueryInterval.Items.Add("过去6小时");
-            cbQueryInterval.Items.Add("过去8小时");
-            cbQueryInterval.Items.Add("过去12小时");
-            cbQueryInterval.Items.Add("过去24小时");
-            cbQueryInterval.Items.Add("过去2天");
-            cbQueryInterval.Items.Add("过去1周");
-            cbQueryInterval.Items.Add("过去2周");
-            cbQueryInterval.Items.Add("过去1个月");
-            cbQueryInterval.Items.Add("过去6个月");
-
+            var intervals = CommonUtility.GetQueryIntervalList();
+            cbQueryInterval.Items.AddRange(intervals.ToArray());
             cbQueryInterval.Text = "过去1小时";
-        }
-
-        private void InitQueryTime()
-        {
-            dtpStart.Value = DateTime.Now - TimeSpan.FromHours(1);
-            dtpEnd.Value = DateTime.Now;
         }
 
         private void cbQueryInterval_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var item = cbQueryInterval.Text;
-            if ("过去1分钟" == item)
+            var intervalText = cbQueryInterval.Text;
+            if ("过去1分钟" == intervalText)
                 dtpStart.Value = DateTime.Now.AddMinutes(-1);
-            else if ("过去5分钟" == item)
+            else if ("过去5分钟" == intervalText)
                 dtpStart.Value = DateTime.Now.AddMinutes(-5);
-            else if ("过去10分钟" == item)
+            else if ("过去10分钟" == intervalText)
                 dtpStart.Value = DateTime.Now.AddMinutes(-10);
-            else if ("过去20分钟" == item)
+            else if ("过去20分钟" == intervalText)
                 dtpStart.Value = DateTime.Now.AddMinutes(-20);
-            else if ("过去30分钟" == item)
+            else if ("过去30分钟" == intervalText)
                 dtpStart.Value = DateTime.Now.AddMinutes(-30);
-            else if ("过去1小时" == item)
+            else if ("过去1小时" == intervalText)
                 dtpStart.Value = DateTime.Now.AddHours(-1);
-            else if ("过去6小时" == item)
+            else if ("过去6小时" == intervalText)
                 dtpStart.Value = DateTime.Now.AddHours(-6);
-            else if ("过去8小时" == item)
+            else if ("过去8小时" == intervalText)
                 dtpStart.Value = DateTime.Now.AddHours(-8);
-            else if ("过去12小时" == item)
+            else if ("过去12小时" == intervalText)
                 dtpStart.Value = DateTime.Now.AddHours(-12);
-            else if ("过去24小时" == item)
+            else if ("过去24小时" == intervalText)
                 dtpStart.Value = DateTime.Now.AddHours(-24);
-            else if ("过去2天" == item)
+            else if ("过去2天" == intervalText)
                 dtpStart.Value = DateTime.Now.AddDays(-2);
-            else if ("过去1周" == item)
+            else if ("过去1周" == intervalText)
                 dtpStart.Value = DateTime.Now.AddDays(-7);
-            else if ("过去2周" == item)
+            else if ("过去2周" == intervalText)
                 dtpStart.Value = DateTime.Now.AddDays(-14);
-            else if ("过去1个月" == item)
+            else if ("过去1个月" == intervalText)
                 dtpStart.Value = DateTime.Now.AddMonths(-1);
-            else if ("过去6个月" == item)
+            else if ("过去6个月" == intervalText)
                 dtpStart.Value = DateTime.Now.AddMonths(-6);
 
             dtpEnd.Value = DateTime.Now;
@@ -1721,57 +1730,6 @@ namespace LineControl
         #endregion
 
         #region 调试
-
-        public void ShowValueOnHover()
-        {
-            formsPlot.MouseMove += (s, e) =>
-            {
-                // determine where the mouse is and get the nearest point
-                var mousePixel = new Pixel(e.Location.X, e.Location.Y);
-                var mouseLocation = formsPlot.Plot.GetCoordinates(mousePixel);
-                //var nearest = MyScatter.Data.GetNearestX(mouseLocation, formsPlot.Plot.LastRender);
-
-                // place the crosshair over the highlighted point
-                //if (nearest.IsReal)
-                //{
-                //    //labelTest.Text = $"Index={nearest.Index}, X={nearest.X:0.##}, Y={nearest.Y:0.##}";
-                //}
-                //else
-                //{
-                //    //labelTest.Text = $"No point selected";
-                //}
-            };
-        }
-
-        public void MouseTracker()
-        {
-            var CH = formsPlot.Plot.Add.Crosshair(0, 0);
-            CH.TextColor = Colors.White;
-            CH.TextBackgroundColor = CH.HorizontalLine.Color;
-
-            formsPlot.Refresh();
-
-            formsPlot.MouseMove += (s, e) =>
-            {
-                Pixel mousePixel = new Pixel(e.X, e.Y);
-                Coordinates mouseCoordinates = formsPlot.Plot.GetCoordinates(mousePixel);
-                this.Text = $"X={mouseCoordinates.X:N3}, Y={mouseCoordinates.Y:N3}";
-                CH.Position = mouseCoordinates;
-                CH.VerticalLine.Text = $"{mouseCoordinates.X:N3}";
-                CH.HorizontalLine.Text = $"{mouseCoordinates.Y:N3}";
-
-                dataTable.Rows[0][CommonConstant.ColumnHeaderLineValue] = mouseCoordinates.Y;
-
-                formsPlot.Refresh();
-            };
-
-            formsPlot.MouseDown += (s, e) =>
-            {
-                Pixel mousePixel = new Pixel(e.X, e.Y);
-                Coordinates mouseCoordinates = formsPlot.Plot.GetCoordinates(mousePixel);
-                //labelTest.Text = $"X={mouseCoordinates.X:N3}, Y={mouseCoordinates.Y:N3} (mouse down)";
-            };
-        }
 
         private void ShowTestLine()
         {
