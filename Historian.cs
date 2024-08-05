@@ -1566,6 +1566,20 @@ namespace LineControl
             }
         }
 
+        private void btGridShow_Click(object sender, EventArgs e)
+        {
+            if (!splitContainerFrame.Panel1Collapsed)
+            {
+                splitContainerFrame.Panel1Collapsed = true;
+                splitContainerFrame.Panel1.Hide();
+            }
+            else
+            {
+                splitContainerFrame.Panel1Collapsed = false;
+                splitContainerFrame.Panel1.Show();
+            }
+        }
+
         #endregion
 
         #region 查询时间
@@ -1725,6 +1739,13 @@ namespace LineControl
             var toolTip = new ToolTip();
             toolTip.ShowAlways = true;
             toolTip.SetToolTip(btChangeAxisType, "单/多轴切换");
+        }
+
+        private void btGridShow_MouseEnter(object sender, EventArgs e)
+        {
+            var toolTip = new ToolTip();
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(btGridShow, "显示/隐藏表格");
         }
 
         #endregion

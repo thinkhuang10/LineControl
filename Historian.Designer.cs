@@ -28,24 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Historian));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Historian));
             this.FrameTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.panelChart = new System.Windows.Forms.Panel();
             this.panelQuery = new System.Windows.Forms.Panel();
+            this.btGridShow = new System.Windows.Forms.Button();
+            this.btChangeAxisType = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.cbQueryInterval = new System.Windows.Forms.ComboBox();
-            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
-            this.dtpStart = new System.Windows.Forms.DateTimePicker();
-            this.splitContainerFrame = new System.Windows.Forms.SplitContainer();
-            this.dgvLines = new System.Windows.Forms.DataGridView();
-            this.btChangeAxisType = new System.Windows.Forms.Button();
             this.btSetting = new System.Windows.Forms.Button();
+            this.cbQueryInterval = new System.Windows.Forms.ComboBox();
             this.btPanningDown = new System.Windows.Forms.Button();
             this.btPanningUp = new System.Windows.Forms.Button();
             this.btPanningRight = new System.Windows.Forms.Button();
@@ -57,6 +54,10 @@
             this.btExport = new System.Windows.Forms.Button();
             this.btPrint = new System.Windows.Forms.Button();
             this.btQuery = new System.Windows.Forms.Button();
+            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
+            this.dtpStart = new System.Windows.Forms.DateTimePicker();
+            this.splitContainerFrame = new System.Windows.Forms.SplitContainer();
+            this.dgvLines = new System.Windows.Forms.DataGridView();
             this.FrameTableLayoutPanel.SuspendLayout();
             this.panelQuery.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerFrame)).BeginInit();
@@ -93,6 +94,7 @@
             // 
             // panelQuery
             // 
+            this.panelQuery.Controls.Add(this.btGridShow);
             this.panelQuery.Controls.Add(this.btChangeAxisType);
             this.panelQuery.Controls.Add(this.label4);
             this.panelQuery.Controls.Add(this.label3);
@@ -119,6 +121,30 @@
             this.panelQuery.Name = "panelQuery";
             this.panelQuery.Size = new System.Drawing.Size(1000, 34);
             this.panelQuery.TabIndex = 1;
+            // 
+            // btGridShow
+            // 
+            this.btGridShow.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btGridShow.BackgroundImage")));
+            this.btGridShow.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btGridShow.Location = new System.Drawing.Point(827, 5);
+            this.btGridShow.Name = "btGridShow";
+            this.btGridShow.Size = new System.Drawing.Size(23, 23);
+            this.btGridShow.TabIndex = 22;
+            this.btGridShow.UseVisualStyleBackColor = true;
+            this.btGridShow.Click += new System.EventHandler(this.btGridShow_Click);
+            this.btGridShow.MouseEnter += new System.EventHandler(this.btGridShow_MouseEnter);
+            // 
+            // btChangeAxisType
+            // 
+            this.btChangeAxisType.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btChangeAxisType.BackgroundImage")));
+            this.btChangeAxisType.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btChangeAxisType.Location = new System.Drawing.Point(803, 5);
+            this.btChangeAxisType.Name = "btChangeAxisType";
+            this.btChangeAxisType.Size = new System.Drawing.Size(23, 23);
+            this.btChangeAxisType.TabIndex = 21;
+            this.btChangeAxisType.UseVisualStyleBackColor = true;
+            this.btChangeAxisType.Click += new System.EventHandler(this.btChangeAxisType_Click);
+            this.btChangeAxisType.MouseEnter += new System.EventHandler(this.btChangeAxisType_MouseEnter);
             // 
             // label4
             // 
@@ -156,110 +182,6 @@
             this.label1.Size = new System.Drawing.Size(2, 26);
             this.label1.TabIndex = 17;
             // 
-            // cbQueryInterval
-            // 
-            this.cbQueryInterval.FormattingEnabled = true;
-            this.cbQueryInterval.Location = new System.Drawing.Point(354, 7);
-            this.cbQueryInterval.Margin = new System.Windows.Forms.Padding(2);
-            this.cbQueryInterval.Name = "cbQueryInterval";
-            this.cbQueryInterval.Size = new System.Drawing.Size(128, 20);
-            this.cbQueryInterval.TabIndex = 15;
-            this.cbQueryInterval.SelectedIndexChanged += new System.EventHandler(this.cbQueryInterval_SelectedIndexChanged);
-            // 
-            // dtpEnd
-            // 
-            this.dtpEnd.CustomFormat = "yyyy-MM-dd HH:mm:ss";
-            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpEnd.Location = new System.Drawing.Point(162, 7);
-            this.dtpEnd.Margin = new System.Windows.Forms.Padding(2);
-            this.dtpEnd.Name = "dtpEnd";
-            this.dtpEnd.Size = new System.Drawing.Size(150, 21);
-            this.dtpEnd.TabIndex = 1;
-            this.dtpEnd.Validated += new System.EventHandler(this.dtpEnd_Validated);
-            // 
-            // dtpStart
-            // 
-            this.dtpStart.CustomFormat = "yyyy-MM-dd HH:mm:ss";
-            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpStart.Location = new System.Drawing.Point(8, 7);
-            this.dtpStart.Margin = new System.Windows.Forms.Padding(2);
-            this.dtpStart.Name = "dtpStart";
-            this.dtpStart.Size = new System.Drawing.Size(150, 21);
-            this.dtpStart.TabIndex = 0;
-            this.dtpStart.Validated += new System.EventHandler(this.dtpStart_Validated);
-            // 
-            // splitContainerFrame
-            // 
-            this.splitContainerFrame.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainerFrame.Location = new System.Drawing.Point(0, 0);
-            this.splitContainerFrame.Margin = new System.Windows.Forms.Padding(2);
-            this.splitContainerFrame.Name = "splitContainerFrame";
-            this.splitContainerFrame.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainerFrame.Panel1
-            // 
-            this.splitContainerFrame.Panel1.Controls.Add(this.dgvLines);
-            // 
-            // splitContainerFrame.Panel2
-            // 
-            this.splitContainerFrame.Panel2.Controls.Add(this.FrameTableLayoutPanel);
-            this.splitContainerFrame.Size = new System.Drawing.Size(1000, 600);
-            this.splitContainerFrame.SplitterDistance = 109;
-            this.splitContainerFrame.SplitterWidth = 2;
-            this.splitContainerFrame.TabIndex = 1;
-            // 
-            // dgvLines
-            // 
-            this.dgvLines.AllowUserToAddRows = false;
-            this.dgvLines.AllowUserToDeleteRows = false;
-            this.dgvLines.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvLines.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvLines.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvLines.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvLines.Location = new System.Drawing.Point(0, 0);
-            this.dgvLines.Margin = new System.Windows.Forms.Padding(2);
-            this.dgvLines.MultiSelect = false;
-            this.dgvLines.Name = "dgvLines";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvLines.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.dgvLines.RowHeadersWidth = 62;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dgvLines.RowsDefaultCellStyle = dataGridViewCellStyle3;
-            this.dgvLines.RowTemplate.Height = 28;
-            this.dgvLines.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvLines.Size = new System.Drawing.Size(1000, 109);
-            this.dgvLines.TabIndex = 0;
-            this.dgvLines.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLines_CellClick);
-            this.dgvLines.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLines_CellContentClick);
-            this.dgvLines.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLines_CellValueChanged);
-            this.dgvLines.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvLines_DataBindingComplete);
-            this.dgvLines.RowStateChanged += new System.Windows.Forms.DataGridViewRowStateChangedEventHandler(this.dgvLines_RowStateChanged);
-            // 
-            // btChangeAxisType
-            // 
-            this.btChangeAxisType.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btChangeAxisType.BackgroundImage")));
-            this.btChangeAxisType.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btChangeAxisType.Location = new System.Drawing.Point(803, 5);
-            this.btChangeAxisType.Name = "btChangeAxisType";
-            this.btChangeAxisType.Size = new System.Drawing.Size(23, 23);
-            this.btChangeAxisType.TabIndex = 21;
-            this.btChangeAxisType.UseVisualStyleBackColor = true;
-            this.btChangeAxisType.Click += new System.EventHandler(this.btChangeAxisType_Click);
-            this.btChangeAxisType.MouseEnter += new System.EventHandler(this.btChangeAxisType_MouseEnter);
-            // 
             // btSetting
             // 
             this.btSetting.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btSetting.BackgroundImage")));
@@ -271,6 +193,16 @@
             this.btSetting.UseVisualStyleBackColor = true;
             this.btSetting.Click += new System.EventHandler(this.btSetting_Click);
             this.btSetting.MouseEnter += new System.EventHandler(this.btSetting_MouseEnter);
+            // 
+            // cbQueryInterval
+            // 
+            this.cbQueryInterval.FormattingEnabled = true;
+            this.cbQueryInterval.Location = new System.Drawing.Point(354, 7);
+            this.cbQueryInterval.Margin = new System.Windows.Forms.Padding(2);
+            this.cbQueryInterval.Name = "cbQueryInterval";
+            this.cbQueryInterval.Size = new System.Drawing.Size(128, 20);
+            this.cbQueryInterval.TabIndex = 15;
+            this.cbQueryInterval.SelectedIndexChanged += new System.EventHandler(this.cbQueryInterval_SelectedIndexChanged);
             // 
             // btPanningDown
             // 
@@ -408,6 +340,88 @@
             this.btQuery.Click += new System.EventHandler(this.btQuery_Click);
             this.btQuery.MouseEnter += new System.EventHandler(this.btQuery_MouseEnter);
             // 
+            // dtpEnd
+            // 
+            this.dtpEnd.CustomFormat = "yyyy-MM-dd HH:mm:ss";
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpEnd.Location = new System.Drawing.Point(162, 7);
+            this.dtpEnd.Margin = new System.Windows.Forms.Padding(2);
+            this.dtpEnd.Name = "dtpEnd";
+            this.dtpEnd.Size = new System.Drawing.Size(150, 21);
+            this.dtpEnd.TabIndex = 1;
+            this.dtpEnd.Validated += new System.EventHandler(this.dtpEnd_Validated);
+            // 
+            // dtpStart
+            // 
+            this.dtpStart.CustomFormat = "yyyy-MM-dd HH:mm:ss";
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpStart.Location = new System.Drawing.Point(8, 7);
+            this.dtpStart.Margin = new System.Windows.Forms.Padding(2);
+            this.dtpStart.Name = "dtpStart";
+            this.dtpStart.Size = new System.Drawing.Size(150, 21);
+            this.dtpStart.TabIndex = 0;
+            this.dtpStart.Validated += new System.EventHandler(this.dtpStart_Validated);
+            // 
+            // splitContainerFrame
+            // 
+            this.splitContainerFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainerFrame.Location = new System.Drawing.Point(0, 0);
+            this.splitContainerFrame.Margin = new System.Windows.Forms.Padding(2);
+            this.splitContainerFrame.Name = "splitContainerFrame";
+            this.splitContainerFrame.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainerFrame.Panel1
+            // 
+            this.splitContainerFrame.Panel1.Controls.Add(this.dgvLines);
+            // 
+            // splitContainerFrame.Panel2
+            // 
+            this.splitContainerFrame.Panel2.Controls.Add(this.FrameTableLayoutPanel);
+            this.splitContainerFrame.Size = new System.Drawing.Size(1000, 600);
+            this.splitContainerFrame.SplitterDistance = 109;
+            this.splitContainerFrame.SplitterWidth = 2;
+            this.splitContainerFrame.TabIndex = 1;
+            // 
+            // dgvLines
+            // 
+            this.dgvLines.AllowUserToAddRows = false;
+            this.dgvLines.AllowUserToDeleteRows = false;
+            this.dgvLines.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvLines.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvLines.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvLines.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvLines.Location = new System.Drawing.Point(0, 0);
+            this.dgvLines.Margin = new System.Windows.Forms.Padding(2);
+            this.dgvLines.MultiSelect = false;
+            this.dgvLines.Name = "dgvLines";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvLines.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dgvLines.RowHeadersWidth = 62;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvLines.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            this.dgvLines.RowTemplate.Height = 20;
+            this.dgvLines.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvLines.Size = new System.Drawing.Size(1000, 109);
+            this.dgvLines.TabIndex = 0;
+            this.dgvLines.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLines_CellClick);
+            this.dgvLines.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLines_CellContentClick);
+            this.dgvLines.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLines_CellValueChanged);
+            this.dgvLines.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvLines_DataBindingComplete);
+            this.dgvLines.RowStateChanged += new System.Windows.Forms.DataGridViewRowStateChangedEventHandler(this.dgvLines_RowStateChanged);
+            // 
             // Historian
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -455,5 +469,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btChangeAxisType;
+        private System.Windows.Forms.Button btGridShow;
     }
 }
